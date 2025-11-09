@@ -1,0 +1,17 @@
+<form class="example-form">
+  <mat-form-field class="example-full-width">
+    <mat-label>Link</mat-label>
+    <input
+      type="url"
+      matInput
+      [formControl]="newsFormControl"
+      placeholder="Ex. www.wyborcza.pl"
+      data-testid="news-search-input"
+    />
+    @if (newsFormControl.hasError('pattern') && !newsFormControl.hasError('required')) {
+    <mat-error data-testid="news-search-www-error">Please enter a valid www address</mat-error>
+    } @if (newsFormControl.hasError('required')) {
+    <mat-error data-testid="news-search-req-error">Link is <strong>required</strong></mat-error>
+    }
+  </mat-form-field>
+</form>
