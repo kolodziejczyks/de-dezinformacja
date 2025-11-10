@@ -3,7 +3,8 @@
   "SHORT_DESCRIPTION": "Quick background check of news. 🗺️",
   "LONG_DESCRIPTION": "Do a background check of news and learn more about the website. Form your opinion based on facts.",
   "NEWS_LINK": "Enter news link",
-  "NEWS_LINK_EXAMPLE": "www.nyt.com/sus-article",
+  "NEWS_LINK_EXAMPLE": "e.g. nyt.com/weird-article",
   "ERROR.INCORRECT_LINK": "Enter a correct link",
-  "ERROR.LINK_REQUIRED": "You must provide a link 🔗"
+  "ERROR.LINK_REQUIRED": "You must provide a link 🔗",
+  "CHANGE_LANGUAGE": "Change language"
 }

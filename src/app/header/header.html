@@ -1,4 +1,15 @@
 <header class="header">
-  <h1>{{ 'TITLE' | translate }}</h1>
+  <div class="header__title">
+    <h1>{{ 'TITLE' | translate }}</h1>
+    <mat-button-toggle-group
+      name="language"
+      [aria-label]="'CHANGE_LANGUAGE' | translate"
+      [hideSingleSelectionIndicator]="true"
+      [formControl]="langFc"
+    >
+      <mat-button-toggle value="pl">PL</mat-button-toggle>
+      <mat-button-toggle value="en">EN</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
   <p>{{ 'SHORT_DESCRIPTION' | translate }}</p>
 </header>

@@ -2,15 +2,14 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Header } from './header/header';
-import { NewsSearch } from './news-search/news-search';
 
 import EN from '../../public/i18n/en.json';
 import PL from '../../public/i18n/pl.json';
-import { Footer } from "./footer/footer";
+import { Footer } from './footer/footer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, NewsSearch, Footer],
+  imports: [RouterOutlet, Header, Footer],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
