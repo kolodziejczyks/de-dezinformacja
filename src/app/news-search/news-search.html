@@ -11,13 +11,14 @@
     <mat-icon matSuffix aria-hidden="false" aria-label="search icon" fontIcon="search" />
 
     @if (newsFormControl.hasError('pattern') && !newsFormControl.hasError('required')) {
-    <mat-error data-testid="news-search-www-error">{{
-      'ERROR.INCORRECT_LINK' | translate
-    }}</mat-error>
-    } @if (newsFormControl.hasError('required')) {
-    <mat-error data-testid="news-search-req-error">{{
-      'ERROR.LINK_REQUIRED' | translate
-    }}</mat-error>
+      <mat-error data-testid="news-search-www-error">{{
+        'ERROR.INCORRECT_LINK' | translate
+      }}</mat-error>
+    }
+    @if (newsFormControl.hasError('required')) {
+      <mat-error data-testid="news-search-req-error">{{
+        'ERROR.LINK_REQUIRED' | translate
+      }}</mat-error>
     }
   </mat-form-field>
 </form>
