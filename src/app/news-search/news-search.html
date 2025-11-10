@@ -1,19 +1,23 @@
 <form class="example-form">
   <mat-form-field class="example-full-width">
-    <mat-label>Link</mat-label>
+    <mat-label>{{ 'NEWS_LINK' | translate }}</mat-label>
     <input
       type="url"
       matInput
       [formControl]="newsFormControl"
-      placeholder="Ex. www.wyborcza.pl"
+      [placeholder]="'NEWS_LINK_EXAMPLE' | translate"
       data-testid="news-search-input"
     />
-    <mat-icon matSuffix aria-hidden="false" aria-label="Example home icon" fontIcon="link" />
+    <mat-icon matSuffix aria-hidden="false" aria-label="search icon" fontIcon="search" />
 
     @if (newsFormControl.hasError('pattern') && !newsFormControl.hasError('required')) {
-    <mat-error data-testid="news-search-www-error">Please enter a valid www address</mat-error>
+    <mat-error data-testid="news-search-www-error">{{
+      'ERROR.INCORRECT_LINK' | translate
+    }}</mat-error>
     } @if (newsFormControl.hasError('required')) {
-    <mat-error data-testid="news-search-req-error">Link is <strong>required</strong></mat-error>
+    <mat-error data-testid="news-search-req-error">{{
+      'ERROR.LINK_REQUIRED' | translate
+    }}</mat-error>
     }
   </mat-form-field>
 </form>

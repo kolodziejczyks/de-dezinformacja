@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatInput, MatFormField, MatLabel, MatError, MatSuffix } from '@angular/material/input';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-news-search',
@@ -13,8 +14,9 @@ import { MatInput, MatFormField, MatLabel, MatError, MatSuffix } from '@angular/
     ReactiveFormsModule,
     MatIcon,
     MatIconModule,
-    MatSuffix
-],
+    MatSuffix,
+    TranslatePipe,
+  ],
   templateUrl: './news-search.html',
   styleUrl: './news-search.scss',
 })

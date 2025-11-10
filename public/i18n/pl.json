@@ -1,3 +1,7 @@
 {
-    "TITLE": "De-Dezinformacja"
+  "TITLE": "De-Dezinformacja",
+  "NEWS_LINK": "Podaj link do newsa",
+  "NEWS_LINK_EXAMPLE": "www.wyborcza.pl/podejrzany-artykul",
+  "ERROR.INCORRECT_LINK": "Podaj poprawny link",
+  "ERROR.LINK_REQUIRED": "Musisz podać jakiś link 🔗"
 }

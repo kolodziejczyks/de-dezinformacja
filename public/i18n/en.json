@@ -1,3 +1,7 @@
 {
-  "TITLE": "De-Disinformation"
+  "TITLE": "De-Disinformation",
+  "NEWS_LINK": "News link",
+  "NEWS_LINK_EXAMPLE": "www.nyt.com/sus-article",
+  "ERROR.INCORRECT_LINK": "Enter a correct link",
+  "ERROR.LINK_REQUIRED": "Link is required 🔗"
 }
