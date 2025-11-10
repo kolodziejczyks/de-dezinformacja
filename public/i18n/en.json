@@ -6,5 +6,6 @@
   "NEWS_LINK_EXAMPLE": "e.g. nyt.com/weird-article",
   "ERROR.INCORRECT_LINK": "Enter a correct link",
   "ERROR.LINK_REQUIRED": "You must provide a link 🔗",
-  "CHANGE_LANGUAGE": "Change language"
+  "CHANGE_LANGUAGE": "Change language",
+  "APACHE_LICENSED": "Licensed under Apache License 2.0"
 }

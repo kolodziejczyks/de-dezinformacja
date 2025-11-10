@@ -6,5 +6,6 @@
   "NEWS_LINK_EXAMPLE": "Np. wyborcza.pl/podejrzany-artykul",
   "ERROR.INCORRECT_LINK": "Podaj poprawny link",
   "ERROR.LINK_REQUIRED": "Musisz podać jakiś link 🔗",
-  "CHANGE_LANGUAGE": "Zmień język"
+  "CHANGE_LANGUAGE": "Zmień język",
+  "APACHE_LICENSED": "Pod licencją Apache 2.0"
 }
