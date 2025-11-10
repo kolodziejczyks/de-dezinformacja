@@ -4,6 +4,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { NewsSearch } from './news-search';
 
 import { getElementByTestId, typeInto } from '../../../testing';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('NewsSearch', () => {
   let component: NewsSearch;
@@ -12,7 +13,7 @@ describe('NewsSearch', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [NewsSearch],
-      providers: [provideZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection(), provideTranslateService()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NewsSearch);

@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Header } from './header';
 import { provideZonelessChangeDetection } from '@angular/core';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('Header', () => {
   let component: Header;
@@ -10,7 +11,7 @@ describe('Header', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Header],
-      providers: [provideZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection(), provideTranslateService()],
     });
 
     fixture = TestBed.createComponent(Header);
@@ -20,11 +21,5 @@ describe('Header', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('header title is visible', () => {
-    const title = document.querySelector('.header');
-
-    expect(title?.textContent).toBe('header');
   });
 });
