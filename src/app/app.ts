@@ -1,7 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Header } from './header/header';
-import { NewsSearch } from "./news-search/news-search";
+import { NewsSearch } from './news-search/news-search';
+
+import EN from '../../public/i18n/en.json';
+import PL from '../../public/i18n/pl.json';
 
 @Component({
   selector: 'app-root',
@@ -10,5 +14,10 @@ import { NewsSearch } from "./news-search/news-search";
   styleUrl: './app.scss',
 })
 export class App {
-  protected readonly title = signal('de-dezinformacja');
+  private translate = inject(TranslateService);
+
+  constructor() {
+    this.translate.setTranslation('pl', PL);
+    this.translate.setTranslation('en', EN);
+  }
 }
