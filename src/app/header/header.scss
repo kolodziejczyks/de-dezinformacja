@@ -1,4 +1,6 @@
 .header {
+  padding: var(--mat-sys-body-large-size);
+  font-weight: var(--mat-sys-label-large-weight);
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }

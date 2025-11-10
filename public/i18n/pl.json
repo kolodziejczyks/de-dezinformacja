@@ -1,5 +1,7 @@
 {
   "TITLE": "De-Dezinformacja",
+  "SHORT_DESCRIPTION": "Szybki background check newsa. 🗺️",
+  "LONG_DESCRIPTION": "Zrób background check newsa i dowiedz się więcej o stronie internetowej. Wyrób swoją opinię na podstawie faktów.",
   "NEWS_LINK": "Podaj link do newsa",
   "NEWS_LINK_EXAMPLE": "www.wyborcza.pl/podejrzany-artykul",
   "ERROR.INCORRECT_LINK": "Podaj poprawny link",
