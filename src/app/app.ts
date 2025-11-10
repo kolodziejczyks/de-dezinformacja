@@ -6,10 +6,11 @@ import { NewsSearch } from './news-search/news-search';
 
 import EN from '../../public/i18n/en.json';
 import PL from '../../public/i18n/pl.json';
+import { Footer } from "./footer/footer";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, NewsSearch],
+  imports: [RouterOutlet, Header, NewsSearch, Footer],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
