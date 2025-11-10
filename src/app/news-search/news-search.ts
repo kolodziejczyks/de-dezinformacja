@@ -1,10 +1,20 @@
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatInput, MatFormField, MatLabel, MatError } from '@angular/material/input';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatInput, MatFormField, MatLabel, MatError, MatSuffix } from '@angular/material/input';
 
 @Component({
   selector: 'app-news-search',
-  imports: [MatInput, MatFormField, MatLabel, MatError, ReactiveFormsModule],
+  imports: [
+    MatInput,
+    MatFormField,
+    MatLabel,
+    MatError,
+    ReactiveFormsModule,
+    MatIcon,
+    MatIconModule,
+    MatSuffix
+],
   templateUrl: './news-search.html',
   styleUrl: './news-search.scss',
 })
