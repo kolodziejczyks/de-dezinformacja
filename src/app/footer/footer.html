@@ -1,10 +1,16 @@
 <footer class="footer">
+  <h4 class="footer__heading">
+    {{ 'ABOUT_WEBSITE' | translate }}
+  </h4>
   <p class="footer__description">{{ 'LONG_DESCRIPTION' | translate }}</p>
   <div class="footer__copyright">
     <p>© {{ currentYear }} Szymon Kołodziejczyk IT Solutions.</p>
     <p>{{ 'APACHE_LICENSED' | translate }}</p>
   </div>
   <div class="footer__links">
+    <h4 class="footer__heading">
+      {{ 'CONTACT_ME' | translate }}
+    </h4>
     <a
       href="https://www.linkedin.com/in/kolodziejczyk-sz"
       target="_blank"
@@ -12,7 +18,7 @@
       mat-icon-button
       aria-label="LinkedIn"
     >
-      <mat-icon fontIcon="linkedin"></mat-icon>
+      <mat-icon fontIcon="people"></mat-icon>
       LinkedIn
     </a>
     <a
@@ -24,6 +30,16 @@
     >
       <mat-icon fontIcon="photo_camera"></mat-icon>
       Instagram
+    </a>
+    <a
+      href="https://github.com/kolodziejczyks"
+      target="_blank"
+      rel="noopener"
+      mat-icon-button
+      aria-label="Github"
+    >
+      <mat-icon fontIcon="code"></mat-icon>
+      Github
     </a>
   </div>
 </footer>

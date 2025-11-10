@@ -5,6 +5,14 @@
   background-color: var(--mat-sys-secondary-container);
   color: var(--mat-sys-on-surface);
 
+  &__heading {
+    margin: 0;
+  }
+
+  &__description {
+    margin: 0;
+  }
+
   &__links {
     display: flex;
     flex-direction: column;
