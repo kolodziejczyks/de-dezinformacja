@@ -1,0 +1,79 @@
+<section class="fact-check" data-testid="fact-check" aria-live="polite">
+  @switch (status()) {
+    @case ('loading') {
+      <div class="fact-check__status" data-testid="fact-check-loading">
+        <mat-spinner diameter="32" />
+        <p>{{ 'FACT_CHECK.LOADING' | translate }}</p>
+      </div>
+    }
+    @case ('no-key') {
+      <p class="fact-check__message" data-testid="fact-check-no-key">
+        {{ 'FACT_CHECK.NO_KEY' | translate }}
+      </p>
+    }
+    @case ('empty') {
+      <p class="fact-check__message" data-testid="fact-check-empty">
+        {{ 'FACT_CHECK.EMPTY' | translate }}
+      </p>
+    }
+    @case ('error') {
+      <p class="fact-check__message fact-check__message--error" data-testid="fact-check-error">
+        {{ 'FACT_CHECK.ERROR' | translate }}
+      </p>
+    }
+    @case ('results') {
+      <h2 class="fact-check__heading">{{ 'FACT_CHECK.HEADING' | translate }}</h2>
+      @if (fellBackToDomain() && matchedQuery()) {
+        <p class="fact-check__note" data-testid="fact-check-domain-note">
+          {{ 'FACT_CHECK.MATCHED_DOMAIN' | translate: { domain: matchedQuery() } }}
+        </p>
+      }
+      <ul class="fact-check__list">
+        @for (review of rows(); track review.trackId) {
+          <li>
+            <mat-card class="fact-check__card" data-testid="fact-check-card">
+              <mat-card-content>
+                <p class="fact-check__claim" data-testid="fact-check-claim">
+                  {{ review.claimText }}
+                </p>
+                @if (review.claimant) {
+                  <p data-testid="fact-check-claimant">
+                    <span class="fact-check__label">{{ 'FACT_CHECK.CLAIMANT' | translate }}:</span>
+                    {{ review.claimant }}
+                  </p>
+                }
+                <p data-testid="fact-check-publisher">
+                  <span class="fact-check__label">{{ 'FACT_CHECK.PUBLISHER' | translate }}:</span>
+                  {{ review.publisherName }}
+                </p>
+                @if (review.textualRating) {
+                  <p data-testid="fact-check-rating">
+                    <span class="fact-check__label">{{ 'FACT_CHECK.RATING' | translate }}:</span>
+                    {{ review.textualRating }}
+                  </p>
+                }
+                @if (review.reviewDateLabel) {
+                  <p data-testid="fact-check-date">
+                    <span class="fact-check__label"
+                      >{{ 'FACT_CHECK.REVIEW_DATE' | translate }}:</span
+                    >
+                    {{ review.reviewDateLabel }}
+                  </p>
+                }
+                <a
+                  class="fact-check__link"
+                  data-testid="fact-check-link"
+                  [href]="review.reviewUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'FACT_CHECK.READ_REVIEW' | translate }}
+                </a>
+              </mat-card-content>
+            </mat-card>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

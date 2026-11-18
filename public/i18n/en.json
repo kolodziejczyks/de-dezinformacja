@@ -32,5 +32,17 @@
   "CHECK.ERROR.NOT_FOUND": "No registration record was found for this domain.",
   "CHECK.ERROR.RATE_LIMIT": "The registration service is rate-limiting requests. Try again in a moment.",
   "CHECK.ERROR.NETWORK": "The registration service could not be reached. Check your connection and try again.",
-  "CHECK.ERROR.UNAVAILABLE": "Registration data is temporarily unavailable."
+  "CHECK.ERROR.UNAVAILABLE": "Registration data is temporarily unavailable.",
+  "FACT_CHECK.HEADING": "Fact-checks",
+  "FACT_CHECK.LOADING": "Looking up fact-checks...",
+  "FACT_CHECK.NO_KEY": "No Fact Check Tools API key is configured. Add it to public/config/fact-check.json.",
+  "FACT_CHECK.EMPTY": "No fact-checks found for this link.",
+  "FACT_CHECK.ERROR": "Fact-checks could not be loaded. Check the API key and your connection, then try again.",
+  "FACT_CHECK.MATCHED_DOMAIN": "No fact-check matched this exact address. Showing reviews that mention {{domain}}.",
+  "FACT_CHECK.CLAIMANT": "Claimant",
+  "FACT_CHECK.PUBLISHER": "Publisher",
+  "FACT_CHECK.RATING": "Rating",
+  "FACT_CHECK.REVIEW_DATE": "Review date",
+  "FACT_CHECK.READ_REVIEW": "Read the review",
+  "FACT_CHECK.SEARCH": "Search fact-checks"
 }

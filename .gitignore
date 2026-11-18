@@ -41,3 +41,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Local Google Fact Check Tools API key. Copy public/config/fact-check.example.json.
+/public/config/fact-check.json

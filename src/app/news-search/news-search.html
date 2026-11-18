@@ -141,3 +141,7 @@
     }
   }
 </div>
+
+@if (submission(); as submission) {
+  <app-fact-check-results [submission]="submission" />
+}

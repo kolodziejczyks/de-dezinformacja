@@ -32,5 +32,17 @@
   "CHECK.ERROR.NOT_FOUND": "Nie znaleziono wpisu rejestracyjnego dla tej domeny.",
   "CHECK.ERROR.RATE_LIMIT": "Usługa rejestracyjna ogranicza liczbę zapytań. Spróbuj ponownie za chwilę.",
   "CHECK.ERROR.NETWORK": "Nie udało się połączyć z usługą rejestracyjną. Sprawdź połączenie i spróbuj ponownie.",
-  "CHECK.ERROR.UNAVAILABLE": "Dane rejestracyjne są chwilowo niedostępne."
+  "CHECK.ERROR.UNAVAILABLE": "Dane rejestracyjne są chwilowo niedostępne.",
+  "FACT_CHECK.HEADING": "Weryfikacje",
+  "FACT_CHECK.LOADING": "Szukam weryfikacji...",
+  "FACT_CHECK.NO_KEY": "Brak klucza Fact Check Tools API. Dodaj go w pliku public/config/fact-check.json.",
+  "FACT_CHECK.EMPTY": "Nie znaleziono weryfikacji dla tego linku.",
+  "FACT_CHECK.ERROR": "Nie udało się pobrać weryfikacji. Sprawdź klucz API i połączenie, a potem spróbuj ponownie.",
+  "FACT_CHECK.MATCHED_DOMAIN": "Brak weryfikacji dla dokładnego adresu. Poniżej weryfikacje, które wspominają {{domain}}.",
+  "FACT_CHECK.CLAIMANT": "Autor twierdzenia",
+  "FACT_CHECK.PUBLISHER": "Wydawca",
+  "FACT_CHECK.RATING": "Ocena",
+  "FACT_CHECK.REVIEW_DATE": "Data weryfikacji",
+  "FACT_CHECK.READ_REVIEW": "Czytaj weryfikację",
+  "FACT_CHECK.SEARCH": "Szukaj weryfikacji"
 }
