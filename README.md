@@ -2,7 +2,9 @@
 
 Quick background check of a news link or news website. The interface is available in Polish and English.
 
-The current app is the UI shell: a link field, a PL/EN toggle, and a short description. The check itself is not implemented yet — `BaseCheckService` is only a stub.
+Enter a news link and `BaseCheckService` looks up that domain's registration data over RDAP, the HTTP/JSON successor of WHOIS. The browser calls the [rdap.org](https://rdap.org/) bootstrap (`https://rdap.org/domain/<domain>`), which redirects to the registry's RDAP server. The result card shows the registrar, registration date, domain age, expiry, last update, registrant organization and country when the registry publishes them, nameservers, and status.
+
+Registries often redact contact data. Thin registries such as Verisign (`.com`, `.net`) do not publish the registrant at all. A TLD with no RDAP service, a rate limit, or a network failure is explained on the card instead of shown as an empty result.
 
 The language toggle is stored in `localStorage` and restored on startup. It defaults to Polish (`pl`).
 

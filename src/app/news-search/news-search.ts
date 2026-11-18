@@ -1,8 +1,13 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { MatInput, MatFormField, MatLabel, MatError, MatSuffix } from '@angular/material/input';
-import { TranslatePipe } from '@ngx-translate/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatError, MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DomainAge, formatUtcDate, pluralCategory } from '../services/domain-check';
+import { BaseCheckService } from '../services/base-check.service';
 import { newsLinkValidator } from './news-link-validator';
 
 @Component({
@@ -14,16 +19,43 @@ import { newsLinkValidator } from './news-link-validator';
     MatError,
     ReactiveFormsModule,
     MatIcon,
-    MatIconModule,
+    MatIconButton,
     MatSuffix,
     TranslatePipe,
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent,
+    MatProgressBar,
   ],
   templateUrl: './news-search.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './news-search.scss',
 })
 export class NewsSearch {
+  private readonly translate = inject(TranslateService);
+
+  readonly baseCheck = inject(BaseCheckService);
+  readonly formatUtcDate = formatUtcDate;
+
   readonly newsFormControl = new FormControl('', {
     validators: [Validators.required, newsLinkValidator],
+    nonNullable: true,
   });
+
+  onSubmit(event: Event): void {
+    event.preventDefault();
+    if (this.newsFormControl.invalid) {
+      this.newsFormControl.markAsTouched();
+      return;
+    }
+    this.baseCheck.check(this.newsFormControl.value);
+  }
+
+  ageLabel(age: DomainAge): string {
+    const lang = this.translate.getCurrentLang() === 'pl' ? 'pl' : 'en';
+    const years = this.translate.instant(`CHECK.YEAR_${pluralCategory(age.years, lang)}`);
+    const days = this.translate.instant(`CHECK.DAY_${pluralCategory(age.days, lang)}`);
+    return `${age.years} ${years}, ${age.days} ${days}`;
+  }
 }

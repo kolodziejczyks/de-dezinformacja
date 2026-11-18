@@ -1,8 +1,40 @@
+:host {
+  display: block;
+  box-sizing: border-box;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+}
+
 .search-form {
   display: flex;
   justify-content: center;
 
   &__form-field {
     width: 100%;
+  }
+}
+
+.result-card {
+  margin-top: 0.5rem;
+
+  &__rows {
+    display: grid;
+    grid-template-columns: minmax(9rem, 14rem) 1fr;
+    gap: 0.75rem 1rem;
+    margin: 0;
+  }
+
+  dt {
+    font-weight: 500;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  &__nameservers {
+    margin: 0;
+    padding-left: 1.25rem;
   }
 }

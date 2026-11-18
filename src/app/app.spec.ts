@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
@@ -10,7 +11,7 @@ describe('App', () => {
     document.documentElement.lang = 'pl';
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideZonelessChangeDetection(), provideTranslateService()],
+      providers: [provideZonelessChangeDetection(), provideHttpClient(), provideTranslateService()],
     }).compileComponents();
   });
 

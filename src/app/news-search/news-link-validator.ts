@@ -23,7 +23,7 @@ export const newsLinkValidator: ValidatorFn = (
   return null;
 };
 
-function isNewsLink(value: string): boolean {
+export function isNewsLink(value: string): boolean {
   if (value !== value.trim() || /\s/.test(value)) {
     return false;
   }
