@@ -62,4 +62,32 @@ describe('NewsSearch', () => {
 
     expect(wwwError).not.toBeTruthy();
   });
+
+  it('accepts article links with a query, fragment, uppercase host, or no scheme', () => {
+    for (const link of [
+      'nyt.com/weird-article',
+      'https://www.BBC.co.uk/news/world-123?at_medium=RSS#top',
+      'tvn24.pl/swiat/artykul,123',
+      'https://example.online:8443/a-long-hyphenated-path?id=1&x=2#top',
+    ]) {
+      typeInto(fixture, 'news-search-input', link);
+
+      expect(getElementByTestId(fixture, 'news-search-www-error')).not.toBeTruthy();
+      expect(component.newsFormControl.valid).toBe(true);
+    }
+  });
+
+  it('rejects non-http schemes', () => {
+    typeInto(fixture, 'news-search-input', 'javascript:alert(1)');
+
+    expect(getElementByTestId(fixture, 'news-search-www-error')).toBeTruthy();
+    expect(component.newsFormControl.hasError('newsLink')).toBe(true);
+  });
+
+  it('uses a text input so scheme-less links are not blocked by the browser URL type', () => {
+    const input = getElementByTestId(fixture, 'news-search-input');
+
+    expect(input.nativeElement.type).toBe('text');
+    expect(input.nativeElement.getAttribute('inputmode')).toBe('url');
+  });
 });

@@ -1,59 +1,70 @@
-# DeDezinformacja
+# De-Dezinformacja
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.9.
+Quick background check of a news link or news website. The interface is available in Polish and English.
+
+The current app is the UI shell: a link field, a PL/EN toggle, and a short description. The check itself is not implemented yet — `BaseCheckService` is only a stub.
+
+The language toggle is stored in `localStorage` and restored on startup. It defaults to Polish (`pl`).
+
+## Tech stack
+
+- Angular 22, Angular Material, and Angular CDK
+- `@ngx-translate/core` for PL/EN
+- Vitest via the `@angular/build:unit-test` builder
+- Prettier
+
+## Install
+
+```bash
+npm ci
+```
 
 ## Development server
 
-To start a local development server, run:
-
 ```bash
-ng serve
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open `http://localhost:4200/`. The app reloads when you change a source file.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Tests
 
 ```bash
-ng generate component component-name
+npm test
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Unit tests run with Vitest.
+
+## Format
+
+Check formatting:
 
 ```bash
-ng generate --help
+npx prettier . --check
 ```
 
-## Building
-
-To build the project run:
+Write formatting:
 
 ```bash
-ng build
+npx prettier . --write
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Production build
 
 ```bash
-ng test
+npm run build
 ```
 
-## Running end-to-end tests
+Output is written to `dist/`.
 
-For end-to-end (e2e) testing, run:
+## CI
 
-```bash
-ng e2e
-```
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on pushes and pull requests to `main`, on Node.js 22:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+1. `npx prettier . --check`
+2. `npm test`
+3. `npm run build`
 
-## Additional Resources
+## License
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[Apache License 2.0](LICENSE).

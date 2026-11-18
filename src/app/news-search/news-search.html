@@ -2,7 +2,10 @@
   <mat-form-field class="search-form__form-field">
     <mat-label>{{ 'NEWS_LINK' | translate }}</mat-label>
     <input
-      type="url"
+      type="text"
+      inputmode="url"
+      autocapitalize="off"
+      spellcheck="false"
       matInput
       [formControl]="newsFormControl"
       [placeholder]="'NEWS_LINK_EXAMPLE' | translate"
@@ -10,7 +13,7 @@
     />
     <mat-icon matSuffix aria-hidden="false" aria-label="search icon" fontIcon="search" />
 
-    @if (newsFormControl.hasError('pattern') && !newsFormControl.hasError('required')) {
+    @if (newsFormControl.hasError('newsLink') && !newsFormControl.hasError('required')) {
       <mat-error data-testid="news-search-www-error">{{
         'ERROR.INCORRECT_LINK' | translate
       }}</mat-error>
