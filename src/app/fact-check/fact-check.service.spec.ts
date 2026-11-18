@@ -127,9 +127,8 @@ describe('FactCheckService', () => {
     http.expectNone((outgoing) => isFactCheckRequest(outgoing));
   });
 
-  it('falls back from an empty article URL to the domain query', () => {
-    const link = 'https://wiadomosci.onet.pl/swiat/story';
-    const candidates = factCheckQueryCandidates(link);
+  it('does not search the parent site when the article URL has no review', () => {
+    const link = 'https://przegladsportowy.onet.pl/siatkowka/wilfredo-leon/wh8ylrx';
     let lookup: FactCheckLookup | undefined;
     service.search(link).subscribe((result) => {
       lookup = result;
@@ -137,22 +136,20 @@ describe('FactCheckService', () => {
 
     http.expectOne(FACT_CHECK_CONFIG_URL).flush({ apiKey: 'test-key' });
 
-    candidates.forEach((candidate, index) => {
-      const request = http.expectOne((outgoing) => isFactCheckRequest(outgoing, candidate.query));
-      expect(request.request.params.has('reviewPublisherSiteFilter')).toBe(false);
+    for (const candidate of factCheckQueryCandidates(link)) {
+      expect(candidate.query).not.toBe('onet.pl');
+      http
+        .expectOne((outgoing) => isFactCheckRequest(outgoing, candidate.query))
+        .flush({ claims: [] });
+    }
 
-      if (index < candidates.length - 1) {
-        request.flush({ claims: [] });
-        return;
-      }
-
-      request.flush({ claims: [claim] });
+    expect(lookup).toEqual({
+      status: 'empty',
+      reviews: [],
+      matchedQuery: null,
+      fellBackToDomain: false,
     });
-
-    expect(lookup?.status).toBe('results');
-    expect(lookup?.fellBackToDomain).toBe(true);
-    expect(lookup?.matchedQuery).toBe('onet.pl');
-    expect(lookup?.reviews[0]?.publisherName).toBe('Demagog');
+    http.expectNone((outgoing) => isFactCheckRequest(outgoing, 'onet.pl'));
   });
 
   it('reports nothing found when every query is empty', () => {

@@ -1,24 +1,25 @@
 import { factCheckQueryCandidates } from './fact-check-queries';
 
 describe('factCheckQueryCandidates', () => {
-  it('tries the article URL before the registrable domain', () => {
-    expect(factCheckQueryCandidates('https://wiadomosci.onet.pl/swiat/story?utm_source=x')).toEqual(
-      [
-        { query: 'https://wiadomosci.onet.pl/swiat/story', kind: 'url' },
-        { query: 'wiadomosci.onet.pl/swiat/story', kind: 'url' },
-        { query: 'wiadomosci.onet.pl', kind: 'domain' },
-        { query: 'onet.pl', kind: 'domain' },
-      ],
-    );
+  it('searches only the article address, not the parent site', () => {
+    expect(
+      factCheckQueryCandidates(
+        'https://przegladsportowy.onet.pl/siatkowka/wilfredo-leon/wh8ylrx?utm_source=x',
+      ),
+    ).toEqual([
+      {
+        query: 'https://przegladsportowy.onet.pl/siatkowka/wilfredo-leon/wh8ylrx',
+        kind: 'url',
+      },
+      { query: 'przegladsportowy.onet.pl/siatkowka/wilfredo-leon/wh8ylrx', kind: 'url' },
+    ]);
   });
 
-  it('strips www and keeps a co.uk registrable domain', () => {
+  it('strips www from an article URL and does not add the bare host', () => {
     expect(factCheckQueryCandidates('https://www.news.bbc.co.uk/article/')).toEqual([
       { query: 'https://www.news.bbc.co.uk/article', kind: 'url' },
       { query: 'https://news.bbc.co.uk/article', kind: 'url' },
       { query: 'news.bbc.co.uk/article', kind: 'url' },
-      { query: 'news.bbc.co.uk', kind: 'domain' },
-      { query: 'bbc.co.uk', kind: 'domain' },
     ]);
   });
 

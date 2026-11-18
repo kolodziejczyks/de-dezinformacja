@@ -150,7 +150,7 @@ describe('FactCheckResults', () => {
     await search('https://example.com/only-domain');
 
     http.expectOne(FACT_CHECK_CONFIG_URL).flush({ apiKey: 'test-key' });
-    const requests = ['https://example.com/only-domain', 'example.com/only-domain', 'example.com'];
+    const requests = ['https://example.com/only-domain', 'example.com/only-domain'];
     requests.forEach((query, index) => {
       const request = http.expectOne((outgoing) => isFactCheckRequest(outgoing, query));
       if (index < requests.length - 1) {
@@ -182,41 +182,21 @@ describe('FactCheckResults', () => {
     );
   });
 
-  it('shows the domain note when only the outlet matched', async () => {
-    await search('https://wiadomosci.onet.pl/swiat/story');
+  it('shows nothing found instead of reviews about the parent site', async () => {
+    await search('https://przegladsportowy.onet.pl/siatkowka/wilfredo-leon/wh8ylrx');
 
     http.expectOne(FACT_CHECK_CONFIG_URL).flush({ apiKey: 'test-key' });
     for (const query of [
-      'https://wiadomosci.onet.pl/swiat/story',
-      'wiadomosci.onet.pl/swiat/story',
-      'wiadomosci.onet.pl',
+      'https://przegladsportowy.onet.pl/siatkowka/wilfredo-leon/wh8ylrx',
+      'przegladsportowy.onet.pl/siatkowka/wilfredo-leon/wh8ylrx',
     ]) {
       http.expectOne((outgoing) => isFactCheckRequest(outgoing, query)).flush({ claims: [] });
     }
-    http
-      .expectOne((outgoing) => isFactCheckRequest(outgoing, 'onet.pl'))
-      .flush({
-        claims: [
-          {
-            text: 'A claim mentioning Onet.',
-            claimReview: [
-              {
-                publisher: { name: 'AFP', site: 'factcheck.afp.com' },
-                url: 'https://factcheck.afp.com/onet',
-                textualRating: 'Misleading',
-                reviewDate: '2024-01-02T00:00:00Z',
-              },
-            ],
-          },
-        ],
-      });
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const note = getElementByTestId(fixture, 'fact-check-domain-note').nativeElement.textContent;
-    expect(note).toContain('onet.pl');
-    expect(getElementByTestId(fixture, 'fact-check-publisher').nativeElement.textContent).toContain(
-      'AFP',
-    );
+    expect(getElementByTestId(fixture, 'fact-check-empty')).toBeTruthy();
+    expect(getElementByTestId(fixture, 'fact-check-domain-note')).not.toBeTruthy();
+    http.expectNone((outgoing) => isFactCheckRequest(outgoing, 'onet.pl'));
   });
 });
