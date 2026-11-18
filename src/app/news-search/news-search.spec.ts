@@ -145,10 +145,12 @@ describe('NewsSearch', () => {
     expect(input.nativeElement.getAttribute('inputmode')).toBe('url');
   });
 
-  it('submits the link from the search button and the enter key', () => {
+  it('submits the link from the search button and the enter key', async () => {
     typeInto(fixture, 'news-search-input', 'https://www.bbc.co.uk/news');
 
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news']);
     expect(factChecks.searched).toEqual(['https://www.bbc.co.uk/news']);
@@ -157,15 +159,22 @@ describe('NewsSearch', () => {
     fixture.nativeElement
       .querySelector('form')
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news', 'tvn24.pl/swiat/artykul,123']);
-    expect(factChecks.searched).toEqual(['https://www.bbc.co.uk/news', 'tvn24.pl/swiat/artykul,123']);
+    expect(factChecks.searched).toEqual([
+      'https://www.bbc.co.uk/news',
+      'tvn24.pl/swiat/artykul,123',
+    ]);
   });
 
-  it('trims surrounding whitespace before looking the link up', () => {
+  it('trims surrounding whitespace before looking the link up', async () => {
     typeInto(fixture, 'news-search-input', '  https://www.bbc.co.uk/news \n');
 
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news']);
     expect(factChecks.searched).toEqual(['https://www.bbc.co.uk/news']);

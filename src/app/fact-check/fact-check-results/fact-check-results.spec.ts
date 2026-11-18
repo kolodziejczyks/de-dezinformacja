@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 
 import { getElementByTestId } from '../../../../testing';
+import { LANGUAGE_STORAGE_KEY } from '../../services/language-service';
 import en from '../../../../public/i18n/en.json';
 import pl from '../../../../public/i18n/pl.json';
 import { FACT_CHECK_CONFIG_URL, FACT_CHECK_SEARCH_URL } from '../fact-check.service';
@@ -44,6 +45,7 @@ describe('FactCheckResults', () => {
   let translate: TranslateService;
 
   beforeEach(async () => {
+    localStorage.removeItem(LANGUAGE_STORAGE_KEY);
     await TestBed.configureTestingModule({
       imports: [FactCheckResults],
       providers: [

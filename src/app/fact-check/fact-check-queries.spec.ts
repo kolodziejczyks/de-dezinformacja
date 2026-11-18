@@ -30,6 +30,20 @@ describe('factCheckQueryCandidates', () => {
     ]);
   });
 
+  it('keeps commas and a fragment in an article path, without the fragment', () => {
+    expect(
+      factCheckQueryCandidates(
+        'https://wyborcza.pl/7,75398,33136776,polska-nie-przekaze.html#s=S.TD-K.C-B.1-L.1.duzy',
+      ),
+    ).toEqual([
+      {
+        query: 'https://wyborcza.pl/7,75398,33136776,polska-nie-przekaze.html',
+        kind: 'url',
+      },
+      { query: 'wyborcza.pl/7,75398,33136776,polska-nie-przekaze.html', kind: 'url' },
+    ]);
+  });
+
   it('returns nothing for a blank or unusable value', () => {
     expect(factCheckQueryCandidates('   ')).toEqual([]);
     expect(factCheckQueryCandidates('not a link')).toEqual([]);

@@ -2,7 +2,9 @@ import { HttpRequest, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideTranslateService, TranslateService } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
+
+import { LANGUAGE_STORAGE_KEY, LanguageService } from '../services/language-service';
 
 import { factCheckQueryCandidates } from './fact-check-queries';
 import { FactCheckClaim, FactCheckLookup } from './fact-check.models';
@@ -50,6 +52,7 @@ describe('FactCheckService', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
+    localStorage.removeItem(LANGUAGE_STORAGE_KEY);
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
@@ -191,7 +194,7 @@ describe('FactCheckService', () => {
   });
 
   it('sends languageCode en when the UI language is English', () => {
-    TestBed.inject(TranslateService).use('en');
+    TestBed.inject(LanguageService).setLanguage('en');
 
     service.search('https://www.snopes.com/fact-check/example').subscribe();
 

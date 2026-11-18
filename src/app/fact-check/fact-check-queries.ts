@@ -1,3 +1,5 @@
+import { normalizeNewsLink } from '../news-search/news-link-validator';
+
 export type FactCheckQueryKind = 'url' | 'domain';
 
 export interface FactCheckQueryCandidate {
@@ -10,13 +12,22 @@ export interface FactCheckQueryCandidate {
  *
  * An exact article URL matches when that URL is itself a fact-check, and usually
  * misses an ordinary news article. The bare host is used only when the link has
- * no path. A parent site such as onet.pl is not searched for a subdomain article:
- * that returns reviews about other pages on the same portal. `reviewPublisherSiteFilter`
- * only keeps reviews published by that host, so it is not used here.
+ * no path. `extractDomain` is not used: it returns the registrable site
+ * (`przegladsportowy.onet.pl` becomes `onet.pl`), and that search returns reviews
+ * of other pages on the same portal. Parsing uses `normalizeNewsLink`, the same
+ * check as the news-link field. `reviewPublisherSiteFilter` only keeps reviews
+ * published by that host, so it is not used here.
  */
 export function factCheckQueryCandidates(link: string): FactCheckQueryCandidate[] {
-  const parsed = parseNewsLink(link);
-  if (!parsed) {
+  const normalized = normalizeNewsLink(link);
+  if (!normalized) {
+    return [];
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(normalized);
+  } catch {
     return [];
   }
 
@@ -41,26 +52,4 @@ export function factCheckQueryCandidates(link: string): FactCheckQueryCandidate[
 
   add(host, 'domain');
   return candidates;
-}
-
-export function parseNewsLink(link: string): URL | null {
-  const trimmed = link.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-
-  try {
-    const url = new URL(withProtocol);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return null;
-    }
-    if (!url.hostname.includes('.')) {
-      return null;
-    }
-    return url;
-  } catch {
-    return null;
-  }
 }

@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { catchError, map, Observable, of, shareReplay, switchMap } from 'rxjs';
 
+import { LanguageService } from '../services/language-service';
 import { factCheckQueryCandidates, FactCheckQueryCandidate } from './fact-check-queries';
 import {
   FactCheckClaim,
@@ -27,7 +27,7 @@ const EMPTY_LOOKUP: FactCheckLookup = {
 })
 export class FactCheckService {
   private readonly http = inject(HttpClient);
-  private readonly translate = inject(TranslateService);
+  private readonly language = inject(LanguageService);
 
   private readonly apiKey$ = this.http.get<FactCheckConfig>(FACT_CHECK_CONFIG_URL).pipe(
     map((config) => (typeof config?.apiKey === 'string' ? config.apiKey.trim() : '')),
@@ -41,7 +41,7 @@ export class FactCheckService {
       return of({ ...EMPTY_LOOKUP, status: 'error' });
     }
 
-    const languageCode = this.languageCode();
+    const languageCode = this.language.language();
 
     return this.apiKey$.pipe(
       switchMap((apiKey) => {
@@ -51,12 +51,6 @@ export class FactCheckService {
         return this.searchCandidates(candidates, apiKey, languageCode, false);
       }),
     );
-  }
-
-  private languageCode(): 'pl' | 'en' {
-    const fallback = this.translate.getFallbackLang();
-    const lang = (this.translate.getCurrentLang() || fallback || 'pl').toLowerCase();
-    return lang.startsWith('en') ? 'en' : 'pl';
   }
 
   private searchCandidates(
