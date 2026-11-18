@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .bg { fill: #366289; }
+    .bar { fill: #fff8f3; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #a0cbf7; }
+      .bar { fill: #003354; }
+    }
+  </style>
+  <rect class="bg" width="32" height="32" rx="8" />
+  <path
+    class="bar"
+    fill-rule="evenodd"
+    d="M10.2 8.2h6.6c4.3 0 7.2 3 7.2 7.8s-2.9 7.8-7.2 7.8h-6.6V8.2zm3.3 3.1v9.4h3c2.4 0 3.9-1.7 3.9-4.7s-1.5-4.7-3.9-4.7h-3z"
+  />
+</svg>

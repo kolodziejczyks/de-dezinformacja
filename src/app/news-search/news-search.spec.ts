@@ -196,6 +196,37 @@ describe('NewsSearch', () => {
     expect(
       getElementByTestId(fixture, 'news-search-nameservers').nativeElement.textContent,
     ).toContain('ns-951.awsdns-54.net');
+    expect(getElementByTestId(fixture, 'news-search-young')).not.toBeTruthy();
+    expect(getElementByTestId(fixture, 'news-search-owner-hidden')).not.toBeTruthy();
+  });
+
+  it('marks a domain under a year old and a registrant with no published organization', () => {
+    checks.state.set({
+      status: 'success',
+      result: {
+        domain: 'fresh.example',
+        registrar: null,
+        registeredAt: '2026-11-01T00:00:00Z',
+        age: { years: 0, days: 17 },
+        expiresAt: null,
+        updatedAt: null,
+        registrantOrganization: null,
+        registrantCountry: null,
+        nameservers: [],
+        status: [],
+      },
+    });
+    fixture.detectChanges();
+
+    expect(getElementByTestId(fixture, 'news-search-young').nativeElement.textContent).toContain(
+      'less than a year',
+    );
+    expect(
+      getElementByTestId(fixture, 'news-search-owner-hidden').nativeElement.textContent,
+    ).toContain('Owner not published');
+    expect(getElementByTestId(fixture, 'news-search-age').nativeElement.textContent).toContain(
+      '0 years, 17 days',
+    );
   });
 
   it('shows a message when the TLD has no registration service', () => {

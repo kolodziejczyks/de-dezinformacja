@@ -1,13 +1,18 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatIconButton } from '@angular/material/button';
-import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatButton } from '@angular/material/button';
+import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
-import { MatError, MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { DomainAge, formatUtcDate, pluralCategory } from '../services/domain-check';
 import { BaseCheckService } from '../services/base-check.service';
+import {
+  DomainAge,
+  DomainRegistration,
+  formatUtcDate,
+  pluralCategory,
+} from '../services/domain-check';
 import { newsLinkValidator, requiredNewsLink } from './news-link-validator';
 
 @Component({
@@ -19,13 +24,9 @@ import { newsLinkValidator, requiredNewsLink } from './news-link-validator';
     MatError,
     ReactiveFormsModule,
     MatIcon,
-    MatIconButton,
-    MatSuffix,
+    MatButton,
     TranslatePipe,
     MatCard,
-    MatCardHeader,
-    MatCardTitle,
-    MatCardContent,
     MatProgressBar,
   ],
   templateUrl: './news-search.html',
@@ -54,6 +55,16 @@ export class NewsSearch {
       return;
     }
     this.baseCheck.check(trimmed);
+  }
+
+  /** A domain registered less than a year ago. Uses the age already on the record. */
+  isYoungDomain(age: DomainAge | null): boolean {
+    return age !== null && age.years === 0;
+  }
+
+  /** The registry did not publish an organization for the registrant. */
+  isOwnerHidden(result: DomainRegistration): boolean {
+    return result.registrantOrganization === null;
   }
 
   ageLabel(age: DomainAge): string {

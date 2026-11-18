@@ -1,10 +1,12 @@
 # De-Dezinformacja
 
-Quick background check of a news link or news website. The interface is available in Polish and English.
+Check the public registration record of a news link or a news site. The interface is Polish by default, with an English toggle.
 
 Enter a news link and `BaseCheckService` looks up that site's registered domain over RDAP, the HTTP/JSON successor of WHOIS. Subdomains are reduced to the registrable name, and multi-part public suffixes stay intact: `przegladsportowy.onet.pl` is queried as `onet.pl`, `news.bbc.co.uk` as `bbc.co.uk`, and `news.example.com.pl` as `example.com.pl`. A host that is only `www` plus a public suffix (`www.gov.pl`) is queried as registered. The browser calls the [rdap.org](https://rdap.org/) bootstrap (`https://rdap.org/domain/<domain>`), which redirects to the registry's RDAP server. The result card shows the registrar, registration date, domain age, expiry, last update, registrant organization and country when the registry publishes them, nameservers, and status.
 
-Registries often redact contact data. Thin registries such as Verisign (`.com`, `.net`) do not publish the registrant at all. A TLD with no RDAP service, a rate limit, or a network failure is explained on the card instead of shown as an empty result.
+Registries often redact contact data. Thin registries such as Verisign (`.com`, `.net`) do not publish the registrant at all. A domain registered less than a year ago, and a registrant with no published organization, are marked on the card. The marks restate data already shown there. A TLD with no RDAP service, a rate limit, or a network failure is explained on the card instead of shown as an empty result.
+
+The page follows the system light or dark setting. Result sections share the `.report-card` styles in `src/styles.scss`, so another check can use the same card.
 
 The language toggle is stored in `localStorage` and restored on startup. It defaults to Polish (`pl`).
 
