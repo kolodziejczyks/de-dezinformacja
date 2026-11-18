@@ -32,18 +32,5 @@
   "CHECK.ERROR.NOT_FOUND": "Nie znaleziono wpisu rejestracyjnego dla tej domeny.",
   "CHECK.ERROR.RATE_LIMIT": "Usługa rejestracyjna ogranicza liczbę zapytań. Spróbuj ponownie za chwilę.",
   "CHECK.ERROR.NETWORK": "Nie udało się połączyć z usługą rejestracyjną. Sprawdź połączenie i spróbuj ponownie.",
-  "CHECK.ERROR.UNAVAILABLE": "Dane rejestracyjne są chwilowo niedostępne.",
-  "FACT.TITLE": "Weryfikacje",
-  "FACT.LOADING": "Szukanie weryfikacji…",
-  "FACT.MISSING_KEY": "Weryfikacje wymagają klucza Google Fact Check Tools API. Dodaj go w src/environments/environment.ts (zobacz README).",
-  "FACT.EMPTY": "Nie znaleziono weryfikacji tego linku w bieżącym języku.",
-  "FACT.CLAIMANT": "Autor twierdzenia",
-  "FACT.PUBLISHER": "Wydawca",
-  "FACT.RATING": "Ocena",
-  "FACT.REVIEWED": "Data weryfikacji",
-  "FACT.REVIEW_LINK": "Recenzja",
-  "FACT.ERROR.NETWORK": "Nie udało się połączyć z usługą weryfikacji. Sprawdź połączenie i spróbuj ponownie.",
-  "FACT.ERROR.RATE_LIMIT": "Usługa weryfikacji ogranicza liczbę zapytań. Spróbuj ponownie za chwilę.",
-  "FACT.ERROR.UNAUTHORIZED": "Usługa weryfikacji odrzuciła klucz. Włącz Fact Check Tools API i zezwól tej stronie na użycie klucza.",
-  "FACT.ERROR.UNAVAILABLE": "Weryfikacje są chwilowo niedostępne."
+  "CHECK.ERROR.UNAVAILABLE": "Dane rejestracyjne są chwilowo niedostępne."
 }

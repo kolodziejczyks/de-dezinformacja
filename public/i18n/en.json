@@ -32,18 +32,5 @@
   "CHECK.ERROR.NOT_FOUND": "No registration record was found for this domain.",
   "CHECK.ERROR.RATE_LIMIT": "The registration service is rate-limiting requests. Try again in a moment.",
   "CHECK.ERROR.NETWORK": "The registration service could not be reached. Check your connection and try again.",
-  "CHECK.ERROR.UNAVAILABLE": "Registration data is temporarily unavailable.",
-  "FACT.TITLE": "Fact checks",
-  "FACT.LOADING": "Looking up fact checks…",
-  "FACT.MISSING_KEY": "Fact checks need a Google Fact Check Tools API key. Add it in src/environments/environment.ts (see the README).",
-  "FACT.EMPTY": "No fact checks were found for this link in the current language.",
-  "FACT.CLAIMANT": "Claimant",
-  "FACT.PUBLISHER": "Publisher",
-  "FACT.RATING": "Rating",
-  "FACT.REVIEWED": "Reviewed",
-  "FACT.REVIEW_LINK": "Review",
-  "FACT.ERROR.NETWORK": "The fact-check service could not be reached. Check your connection and try again.",
-  "FACT.ERROR.RATE_LIMIT": "The fact-check service is rate-limiting requests. Try again in a moment.",
-  "FACT.ERROR.UNAUTHORIZED": "The fact-check API rejected the key. Enable the Fact Check Tools API and allow this site on the key.",
-  "FACT.ERROR.UNAVAILABLE": "Fact checks are temporarily unavailable."
+  "CHECK.ERROR.UNAVAILABLE": "Registration data is temporarily unavailable."
 }
