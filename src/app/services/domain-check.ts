@@ -1,7 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { isNewsLink } from '../news-search/news-link-validator';
+import { getDomain, getPublicSuffix } from 'tldts';
+import { normalizeNewsLink } from '../news-search/news-link-validator';
 
 export const RDAP_DOMAIN_URL = 'https://rdap.org/domain/';
+
+/** ICANN public suffixes only, so `.co.uk` and `.com.pl` stay intact. */
+const PUBLIC_SUFFIX = { allowPrivateDomains: false } as const;
 
 export interface DomainAge {
   years: number;
@@ -48,6 +52,7 @@ interface RdapEntity {
 
 export interface RdapDomain {
   ldhName?: string;
+  unicodeName?: string;
   status?: unknown;
   events?: RdapEvent[];
   nameservers?: { ldhName?: string }[];
@@ -61,25 +66,45 @@ export function rdapDomainUrl(domain: string): string {
   return `${RDAP_DOMAIN_URL}${encodeURIComponent(domain)}`;
 }
 
-/** Hostname of a validated news link, without a leading `www.`. */
+/**
+ * Registered domain of a news link (eTLD+1).
+ * `przegladsportowy.onet.pl` is `onet.pl`, `news.bbc.co.uk` is `bbc.co.uk`,
+ * and `news.example.com.pl` is `example.com.pl`. A public suffix that is
+ * itself registered (`gov.pl`, `co.uk`) is returned unchanged.
+ * `www` plus only a public suffix (`www.gov.pl`, `www.nhs.uk`) is kept so the
+ * lookup can tell a separate registration from a host name of the suffix.
+ */
 export function extractDomain(value: string): string | null {
-  if (!isNewsLink(value)) {
+  const hostname = newsHostname(value);
+  if (!hostname) {
     return null;
   }
-  const candidate = /^https?:\/\//i.test(value) ? value : `https://${value}`;
-  let hostname: string;
+  return getDomain(hostname, PUBLIC_SUFFIX) ?? hostname;
+}
+
+/**
+ * Second RDAP name when `domain` is exactly `www.<public suffix>`.
+ * Tried only after that name is not found: `www.nhs.uk` has no record and
+ * `nhs.uk` does, while `www.gov.pl` is a different registration from `gov.pl`.
+ */
+export function wwwPublicSuffixFallback(domain: string): string | null {
+  const suffix = getPublicSuffix(domain, PUBLIC_SUFFIX);
+  if (!suffix) {
+    return null;
+  }
+  return domain.toLowerCase() === `www.${suffix}` ? suffix : null;
+}
+
+function newsHostname(value: string): string | null {
+  const candidate = normalizeNewsLink(value);
+  if (!candidate) {
+    return null;
+  }
   try {
-    hostname = new URL(candidate).hostname.replace(/\.$/, '');
+    return new URL(candidate).hostname.replace(/\.$/, '').toLowerCase() || null;
   } catch {
     return null;
   }
-  if (hostname.startsWith('www.')) {
-    const withoutWww = hostname.slice(4);
-    if (withoutWww.includes('.')) {
-      return withoutWww;
-    }
-  }
-  return hostname || null;
 }
 
 export function mapRdapDomain(
@@ -94,7 +119,7 @@ export function mapRdapDomain(
   const registrar = firstEntity(body.entities, 'registrar');
 
   return {
-    domain: normalizeName(body.ldhName) ?? queriedDomain,
+    domain: normalizeName(body.unicodeName) ?? normalizeName(body.ldhName) ?? queriedDomain,
     registrar: entityName(registrar),
     registeredAt,
     age: registeredAt ? domainAge(registeredAt, now) : null,
@@ -222,11 +247,12 @@ function organizationName(entity: RdapEntity): string | null {
   if (org) {
     return org;
   }
-  const fn = vcardText(entity, 'fn');
-  if (fn && vcardText(entity, 'kind') === 'org') {
-    return fn;
+  // A personal registrant name is not an organization. `kind` is often omitted
+  // when the formatted name is the company, so only `individual` is excluded.
+  if (vcardText(entity, 'kind') === 'individual') {
+    return null;
   }
-  return fn;
+  return vcardText(entity, 'fn');
 }
 
 function countryName(entity: RdapEntity): string | null {

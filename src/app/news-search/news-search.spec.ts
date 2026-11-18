@@ -85,18 +85,30 @@ describe('NewsSearch', () => {
     expect(wwwError).not.toBeTruthy();
   });
 
-  it('accepts article links with a query, fragment, uppercase host, or no scheme', () => {
+  it('accepts realistic article links, including commas, fragments, IDN, and pasted whitespace', () => {
     for (const link of [
       'nyt.com/weird-article',
       'https://www.BBC.co.uk/news/world-123?at_medium=RSS#top',
       'tvn24.pl/swiat/artykul,123',
       'https://example.online:8443/a-long-hyphenated-path?id=1&x=2#top',
+      'https://wyborcza.pl/7,75398,33136776,polska-nie-przekaze-dodatkowych-srodkow-na-program-purl-wspierajacy.html#s=S.TD-K.C-B.1-L.1.duzy',
+      'https://przegladsportowy.onet.pl/siatkowka/tauron-liga-siatkarzy/wilfredo-leon-zmienil-zdanie-ws-transferu-taka-zaplaci-kare-znamy-kulisy/wh8ylrx',
+      '  https://wyborcza.pl/a  ',
+      'żółw.pl',
+      'https://пример.рф/новость',
     ]) {
       typeInto(fixture, 'news-search-input', link);
 
       expect(getElementByTestId(fixture, 'news-search-www-error')).not.toBeTruthy();
       expect(component.newsFormControl.valid).toBe(true);
     }
+  });
+
+  it('treats a whitespace-only value as a missing link', () => {
+    typeInto(fixture, 'news-search-input', '   ');
+
+    expect(getElementByTestId(fixture, 'news-search-req-error')).toBeTruthy();
+    expect(getElementByTestId(fixture, 'news-search-www-error')).not.toBeTruthy();
   });
 
   it('rejects non-http schemes', () => {
@@ -128,6 +140,15 @@ describe('NewsSearch', () => {
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news', 'tvn24.pl/swiat/artykul,123']);
   });
 
+  it('trims surrounding whitespace before looking the link up', () => {
+    typeInto(fixture, 'news-search-input', '  https://www.bbc.co.uk/news \n');
+
+    getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
+
+    expect(checks.checked).toEqual(['https://www.bbc.co.uk/news']);
+    expect(component.newsFormControl.value).toBe('https://www.bbc.co.uk/news');
+  });
+
   it('does not look up an invalid link', () => {
     typeInto(fixture, 'news-search-input', 'dupa');
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
@@ -153,9 +174,10 @@ describe('NewsSearch', () => {
     });
     fixture.detectChanges();
 
-    expect(getElementByTestId(fixture, 'news-search-domain').nativeElement.textContent).toContain(
-      'tvn24.pl',
-    );
+    const domain = getElementByTestId(fixture, 'news-search-domain');
+    expect(domain.nativeElement.textContent).toContain('tvn24.pl');
+    expect(domain.nativeElement.getAttribute('role')).toBe('heading');
+    expect(domain.nativeElement.getAttribute('aria-level')).toBe('2');
     expect(
       getElementByTestId(fixture, 'news-search-registrar').nativeElement.textContent,
     ).toContain('premium.pl Sp. z o.o.');
@@ -192,5 +214,8 @@ describe('NewsSearch', () => {
     expect(getElementByTestId(fixture, 'news-search-loading').nativeElement.textContent).toContain(
       'Looking up registration data',
     );
+    expect(
+      getElementByTestId(fixture, 'news-search-result').nativeElement.getAttribute('aria-busy'),
+    ).toBe('true');
   });
 });

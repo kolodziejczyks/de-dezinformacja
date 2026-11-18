@@ -31,6 +31,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
 
     expect(document.documentElement.lang).toBe('en');
+    expect(document.title).toBe('De-Disinformation');
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('De-Disinformation');
   });

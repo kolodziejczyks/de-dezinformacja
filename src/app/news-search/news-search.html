@@ -34,101 +34,110 @@
   </mat-form-field>
 </form>
 
-@if (baseCheck.state(); as state) {
-  @if (state.status !== 'idle') {
-    <mat-card class="result-card" appearance="outlined" data-testid="news-search-result">
-      @switch (state.status) {
-        @case ('loading') {
-          <mat-card-content aria-live="polite" data-testid="news-search-loading">
-            <mat-progress-bar mode="indeterminate" />
-            <p>{{ 'CHECK.LOADING' | translate }}</p>
-          </mat-card-content>
-        }
-        @case ('error') {
-          <mat-card-content aria-live="polite" data-testid="news-search-error">
-            @switch (state.kind) {
-              @case ('unsupported') {
-                <p>{{ 'CHECK.ERROR.UNSUPPORTED' | translate }}</p>
-              }
-              @case ('not-found') {
-                <p>{{ 'CHECK.ERROR.NOT_FOUND' | translate }}</p>
-              }
-              @case ('rate-limit') {
-                <p>{{ 'CHECK.ERROR.RATE_LIMIT' | translate }}</p>
-              }
-              @case ('network') {
-                <p>{{ 'CHECK.ERROR.NETWORK' | translate }}</p>
-              }
-              @case ('unavailable') {
-                <p>{{ 'CHECK.ERROR.UNAVAILABLE' | translate }}</p>
-              }
-            }
-          </mat-card-content>
-        }
-        @case ('success') {
-          <mat-card-header>
-            <mat-card-title data-testid="news-search-domain">{{
-              state.result.domain
-            }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content aria-live="polite">
-            <dl class="result-card__rows">
-              <dt>{{ 'CHECK.REGISTRAR' | translate }}</dt>
-              <dd data-testid="news-search-registrar">
-                {{ state.result.registrar || ('CHECK.UNAVAILABLE' | translate) }}
-              </dd>
-              <dt>{{ 'CHECK.REGISTERED' | translate }}</dt>
-              <dd data-testid="news-search-registered">
-                {{ formatUtcDate(state.result.registeredAt) || ('CHECK.UNAVAILABLE' | translate) }}
-              </dd>
-              <dt>{{ 'CHECK.AGE' | translate }}</dt>
-              <dd data-testid="news-search-age">
-                @if (state.result.age) {
-                  {{ ageLabel(state.result.age) }}
-                } @else {
-                  {{ 'CHECK.UNAVAILABLE' | translate }}
+<div aria-live="polite" aria-atomic="true">
+  @if (baseCheck.state(); as state) {
+    @if (state.status !== 'idle') {
+      <mat-card
+        class="result-card"
+        appearance="outlined"
+        data-testid="news-search-result"
+        [attr.aria-busy]="state.status === 'loading' ? true : null"
+      >
+        @switch (state.status) {
+          @case ('loading') {
+            <mat-card-content data-testid="news-search-loading">
+              <mat-progress-bar mode="indeterminate" />
+              <p>{{ 'CHECK.LOADING' | translate }}</p>
+            </mat-card-content>
+          }
+          @case ('error') {
+            <mat-card-content data-testid="news-search-error">
+              @switch (state.kind) {
+                @case ('unsupported') {
+                  <p>{{ 'CHECK.ERROR.UNSUPPORTED' | translate }}</p>
                 }
-              </dd>
-              <dt>{{ 'CHECK.EXPIRES' | translate }}</dt>
-              <dd data-testid="news-search-expires">
-                {{ formatUtcDate(state.result.expiresAt) || ('CHECK.UNAVAILABLE' | translate) }}
-              </dd>
-              <dt>{{ 'CHECK.UPDATED' | translate }}</dt>
-              <dd data-testid="news-search-updated">
-                {{ formatUtcDate(state.result.updatedAt) || ('CHECK.UNAVAILABLE' | translate) }}
-              </dd>
-              <dt>{{ 'CHECK.ORGANIZATION' | translate }}</dt>
-              <dd data-testid="news-search-organization">
-                {{ state.result.registrantOrganization || ('CHECK.UNAVAILABLE' | translate) }}
-              </dd>
-              <dt>{{ 'CHECK.COUNTRY' | translate }}</dt>
-              <dd data-testid="news-search-country">
-                {{ state.result.registrantCountry || ('CHECK.UNAVAILABLE' | translate) }}
-              </dd>
-              <dt>{{ 'CHECK.STATUS' | translate }}</dt>
-              <dd data-testid="news-search-status">
-                @if (state.result.status.length) {
-                  {{ state.result.status.join(', ') }}
-                } @else {
-                  {{ 'CHECK.UNAVAILABLE' | translate }}
+                @case ('not-found') {
+                  <p>{{ 'CHECK.ERROR.NOT_FOUND' | translate }}</p>
                 }
-              </dd>
-              <dt>{{ 'CHECK.NAMESERVERS' | translate }}</dt>
-              <dd data-testid="news-search-nameservers">
-                @if (state.result.nameservers.length) {
-                  <ul class="result-card__nameservers">
-                    @for (nameserver of state.result.nameservers; track nameserver) {
-                      <li>{{ nameserver }}</li>
-                    }
-                  </ul>
-                } @else {
-                  {{ 'CHECK.UNAVAILABLE' | translate }}
+                @case ('rate-limit') {
+                  <p>{{ 'CHECK.ERROR.RATE_LIMIT' | translate }}</p>
                 }
-              </dd>
-            </dl>
-          </mat-card-content>
+                @case ('network') {
+                  <p>{{ 'CHECK.ERROR.NETWORK' | translate }}</p>
+                }
+                @case ('unavailable') {
+                  <p>{{ 'CHECK.ERROR.UNAVAILABLE' | translate }}</p>
+                }
+              }
+            </mat-card-content>
+          }
+          @case ('success') {
+            <mat-card-header>
+              <mat-card-title role="heading" aria-level="2" data-testid="news-search-domain">{{
+                state.result.domain
+              }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <dl class="result-card__rows">
+                <dt>{{ 'CHECK.REGISTRAR' | translate }}</dt>
+                <dd data-testid="news-search-registrar">
+                  {{ state.result.registrar || ('CHECK.UNAVAILABLE' | translate) }}
+                </dd>
+                <dt>{{ 'CHECK.REGISTERED' | translate }}</dt>
+                <dd data-testid="news-search-registered">
+                  {{
+                    formatUtcDate(state.result.registeredAt) || ('CHECK.UNAVAILABLE' | translate)
+                  }}
+                </dd>
+                <dt>{{ 'CHECK.AGE' | translate }}</dt>
+                <dd data-testid="news-search-age">
+                  @if (state.result.age) {
+                    {{ ageLabel(state.result.age) }}
+                  } @else {
+                    {{ 'CHECK.UNAVAILABLE' | translate }}
+                  }
+                </dd>
+                <dt>{{ 'CHECK.EXPIRES' | translate }}</dt>
+                <dd data-testid="news-search-expires">
+                  {{ formatUtcDate(state.result.expiresAt) || ('CHECK.UNAVAILABLE' | translate) }}
+                </dd>
+                <dt>{{ 'CHECK.UPDATED' | translate }}</dt>
+                <dd data-testid="news-search-updated">
+                  {{ formatUtcDate(state.result.updatedAt) || ('CHECK.UNAVAILABLE' | translate) }}
+                </dd>
+                <dt>{{ 'CHECK.ORGANIZATION' | translate }}</dt>
+                <dd data-testid="news-search-organization">
+                  {{ state.result.registrantOrganization || ('CHECK.UNAVAILABLE' | translate) }}
+                </dd>
+                <dt>{{ 'CHECK.COUNTRY' | translate }}</dt>
+                <dd data-testid="news-search-country">
+                  {{ state.result.registrantCountry || ('CHECK.UNAVAILABLE' | translate) }}
+                </dd>
+                <dt>{{ 'CHECK.STATUS' | translate }}</dt>
+                <dd data-testid="news-search-status">
+                  @if (state.result.status.length) {
+                    {{ state.result.status.join(', ') }}
+                  } @else {
+                    {{ 'CHECK.UNAVAILABLE' | translate }}
+                  }
+                </dd>
+                <dt>{{ 'CHECK.NAMESERVERS' | translate }}</dt>
+                <dd data-testid="news-search-nameservers">
+                  @if (state.result.nameservers.length) {
+                    <ul class="result-card__nameservers">
+                      @for (nameserver of state.result.nameservers; track nameserver) {
+                        <li>{{ nameserver }}</li>
+                      }
+                    </ul>
+                  } @else {
+                    {{ 'CHECK.UNAVAILABLE' | translate }}
+                  }
+                </dd>
+              </dl>
+            </mat-card-content>
+          }
         }
-      }
-    </mat-card>
+      </mat-card>
+    }
   }
-}
+</div>
