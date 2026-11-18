@@ -70,3 +70,24 @@ Output is written to `dist/`.
 ## License
 
 [Apache License 2.0](LICENSE).
+
+## Fact-check lookup
+
+Submitting a news link asks the [Google Fact Check Tools API](https://developers.google.com/fact-check/tools/api) (`claims:search`) for reviews of that address. The UI language is sent as `languageCode` (`pl` or `en`).
+
+### API key
+
+The key is not committed. The app reads it at runtime from `public/config/fact-check.json`.
+
+1. Enable **Fact Check Tools API** in [Google Cloud Console](https://console.cloud.google.com/apis/library/factchecktools.googleapis.com) and create an API key.
+2. Copy the example and set `apiKey`:
+
+```bash
+cp public/config/fact-check.example.json public/config/fact-check.json
+```
+
+3. Restart or refresh the app.
+
+A key used from this frontend is visible to anyone who can load the site. In Google Cloud, restrict it by HTTP referrer (local and production origins) and limit it to the Fact Check Tools API.
+
+`claims:search` has no field for the article being reviewed. `query` with the exact URL matches when that URL is itself a fact-check, and usually misses an ordinary news article. A link with a path is not broadened to the parent site (`przegladsportowy.onet.pl/...` is not searched as `onet.pl`), because that returns reviews of other pages on the same portal. A link with no path is searched as the bare host. `reviewPublisherSiteFilter` only keeps reviews published by that host, so this lookup does not send it.

@@ -3,11 +3,28 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import EN from '../../../public/i18n/en.json';
 import { getElementByTestId, typeInto } from '../../../testing';
+import { FactCheckLookup } from '../fact-check/fact-check.models';
+import { FactCheckService } from '../fact-check/fact-check.service';
 import { BaseCheckService } from '../services/base-check.service';
 import { DomainCheckState } from '../services/domain-check';
 import { NewsSearch } from './news-search';
+
+class FakeFactCheckService {
+  readonly searched: string[] = [];
+
+  search(link: string) {
+    this.searched.push(link);
+    return of<FactCheckLookup>({
+      status: 'empty',
+      reviews: [],
+      matchedQuery: null,
+      fellBackToDomain: false,
+    });
+  }
+}
 
 class FakeBaseCheckService {
   readonly state = signal<DomainCheckState>({ status: 'idle' });
@@ -22,15 +39,18 @@ describe('NewsSearch', () => {
   let component: NewsSearch;
   let fixture: ComponentFixture<NewsSearch>;
   let checks: FakeBaseCheckService;
+  let factChecks: FakeFactCheckService;
 
   beforeEach(async () => {
     checks = new FakeBaseCheckService();
+    factChecks = new FakeFactCheckService();
     await TestBed.configureTestingModule({
       imports: [NewsSearch],
       providers: [
         provideZonelessChangeDetection(),
         provideTranslateService({ lang: 'en', fallbackLang: 'en' }),
         { provide: BaseCheckService, useValue: checks },
+        { provide: FactCheckService, useValue: factChecks },
       ],
     }).compileComponents();
 
@@ -125,27 +145,39 @@ describe('NewsSearch', () => {
     expect(input.nativeElement.getAttribute('inputmode')).toBe('url');
   });
 
-  it('submits the link from the search button and the enter key', () => {
+  it('submits the link from the search button and the enter key', async () => {
     typeInto(fixture, 'news-search-input', 'https://www.bbc.co.uk/news');
 
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news']);
+    expect(factChecks.searched).toEqual(['https://www.bbc.co.uk/news']);
 
     typeInto(fixture, 'news-search-input', 'tvn24.pl/swiat/artykul,123');
     fixture.nativeElement
       .querySelector('form')
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news', 'tvn24.pl/swiat/artykul,123']);
+    expect(factChecks.searched).toEqual([
+      'https://www.bbc.co.uk/news',
+      'tvn24.pl/swiat/artykul,123',
+    ]);
   });
 
-  it('trims surrounding whitespace before looking the link up', () => {
+  it('trims surrounding whitespace before looking the link up', async () => {
     typeInto(fixture, 'news-search-input', '  https://www.bbc.co.uk/news \n');
 
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news']);
+    expect(factChecks.searched).toEqual(['https://www.bbc.co.uk/news']);
     expect(component.newsFormControl.value).toBe('https://www.bbc.co.uk/news');
   });
 
@@ -154,6 +186,7 @@ describe('NewsSearch', () => {
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
 
     expect(checks.checked).toEqual([]);
+    expect(factChecks.searched).toEqual([]);
   });
 
   it('shows registration data returned by the check', () => {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatIconButton } from '@angular/material/button';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
@@ -6,6 +6,10 @@ import { MatIcon } from '@angular/material/icon';
 import { MatError, MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import {
+  FactCheckResults,
+  FactCheckSubmission,
+} from '../fact-check/fact-check-results/fact-check-results';
 import { DomainAge, formatUtcDate, pluralCategory } from '../services/domain-check';
 import { BaseCheckService } from '../services/base-check.service';
 import { newsLinkValidator, requiredNewsLink } from './news-link-validator';
@@ -27,6 +31,7 @@ import { newsLinkValidator, requiredNewsLink } from './news-link-validator';
     MatCardTitle,
     MatCardContent,
     MatProgressBar,
+    FactCheckResults,
   ],
   templateUrl: './news-search.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -43,6 +48,10 @@ export class NewsSearch {
     nonNullable: true,
   });
 
+  readonly submission = signal<FactCheckSubmission | null>(null);
+
+  private searchId = 0;
+
   onSubmit(event: Event): void {
     event.preventDefault();
     const trimmed = this.newsFormControl.value.trim();
@@ -54,6 +63,8 @@ export class NewsSearch {
       return;
     }
     this.baseCheck.check(trimmed);
+    this.searchId += 1;
+    this.submission.set({ link: trimmed, id: this.searchId });
   }
 
   ageLabel(age: DomainAge): string {

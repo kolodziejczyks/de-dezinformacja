@@ -1,0 +1,51 @@
+.fact-check {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem var(--mat-sys-body-large-size) 2rem;
+
+  &__heading {
+    margin: 0;
+    font: var(--mat-sys-headline-small);
+  }
+
+  &__status,
+  &__message,
+  &__note {
+    margin: 0;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__message--error {
+    color: var(--mat-sys-error);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__claim {
+    margin: 0 0 0.5rem;
+    font: var(--mat-sys-title-medium);
+  }
+
+  &__label {
+    font-weight: var(--mat-sys-label-large-weight);
+  }
+
+  &__link {
+    display: inline-block;
+    margin-top: 0.25rem;
+    color: var(--mat-sys-primary);
+  }
+}
