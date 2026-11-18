@@ -38,3 +38,17 @@
     padding-left: 1.25rem;
   }
 }
+
+.fact-check {
+  margin: 0 0 1.25rem;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

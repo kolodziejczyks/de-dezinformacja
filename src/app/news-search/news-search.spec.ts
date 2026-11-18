@@ -7,6 +7,8 @@ import EN from '../../../public/i18n/en.json';
 import { getElementByTestId, typeInto } from '../../../testing';
 import { BaseCheckService } from '../services/base-check.service';
 import { DomainCheckState } from '../services/domain-check';
+import { FactCheckState } from '../services/fact-check';
+import { FactCheckService } from '../services/fact-check.service';
 import { NewsSearch } from './news-search';
 
 class FakeBaseCheckService {
@@ -18,19 +20,31 @@ class FakeBaseCheckService {
   }
 }
 
+class FakeFactCheckService {
+  readonly state = signal<FactCheckState>({ status: 'idle' });
+  readonly checked: { link: string; language: string }[] = [];
+
+  check(link: string, language: 'pl' | 'en'): void {
+    this.checked.push({ link, language });
+  }
+}
+
 describe('NewsSearch', () => {
   let component: NewsSearch;
   let fixture: ComponentFixture<NewsSearch>;
   let checks: FakeBaseCheckService;
+  let factChecks: FakeFactCheckService;
 
   beforeEach(async () => {
     checks = new FakeBaseCheckService();
+    factChecks = new FakeFactCheckService();
     await TestBed.configureTestingModule({
       imports: [NewsSearch],
       providers: [
         provideZonelessChangeDetection(),
         provideTranslateService({ lang: 'en', fallbackLang: 'en' }),
         { provide: BaseCheckService, useValue: checks },
+        { provide: FactCheckService, useValue: factChecks },
       ],
     }).compileComponents();
 
@@ -119,6 +133,7 @@ describe('NewsSearch', () => {
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news']);
+    expect(factChecks.checked).toEqual([{ link: 'https://www.bbc.co.uk/news', language: 'en' }]);
 
     typeInto(fixture, 'news-search-input', 'tvn24.pl/swiat/artykul,123');
     fixture.nativeElement
@@ -126,6 +141,22 @@ describe('NewsSearch', () => {
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news', 'tvn24.pl/swiat/artykul,123']);
+    expect(factChecks.checked).toEqual([
+      { link: 'https://www.bbc.co.uk/news', language: 'en' },
+      { link: 'tvn24.pl/swiat/artykul,123', language: 'en' },
+    ]);
+  });
+
+  it('searches fact checks again when the UI language changes', () => {
+    typeInto(fixture, 'news-search-input', 'https://www.bbc.co.uk/news');
+    getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
+
+    TestBed.inject(TranslateService).use('pl');
+
+    expect(factChecks.checked).toEqual([
+      { link: 'https://www.bbc.co.uk/news', language: 'en' },
+      { link: 'https://www.bbc.co.uk/news', language: 'pl' },
+    ]);
   });
 
   it('does not look up an invalid link', () => {
@@ -133,6 +164,7 @@ describe('NewsSearch', () => {
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
 
     expect(checks.checked).toEqual([]);
+    expect(factChecks.checked).toEqual([]);
   });
 
   it('shows registration data returned by the check', () => {
@@ -191,6 +223,50 @@ describe('NewsSearch', () => {
 
     expect(getElementByTestId(fixture, 'news-search-loading').nativeElement.textContent).toContain(
       'Looking up registration data',
+    );
+  });
+
+  it('shows matching fact checks', () => {
+    factChecks.state.set({
+      status: 'success',
+      reviews: [
+        {
+          claimText: 'The election was stolen.',
+          claimant: 'A politician',
+          publisher: 'Demagog',
+          textualRating: 'Fałsz',
+          reviewDate: '2024-03-01T12:00:00Z',
+          reviewUrl: 'https://demagog.org.pl/wypowiedzi/example',
+        },
+      ],
+    });
+    fixture.detectChanges();
+
+    expect(getElementByTestId(fixture, 'fact-check-claim').nativeElement.textContent).toContain(
+      'The election was stolen.',
+    );
+    expect(getElementByTestId(fixture, 'fact-check-publisher').nativeElement.textContent).toContain(
+      'Demagog',
+    );
+    expect(getElementByTestId(fixture, 'fact-check-rating').nativeElement.textContent).toContain(
+      'Fałsz',
+    );
+    const link = getElementByTestId(fixture, 'fact-check-link').nativeElement as HTMLAnchorElement;
+    expect(link.href).toBe('https://demagog.org.pl/wypowiedzi/example');
+    expect(link.target).toBe('_blank');
+  });
+
+  it('explains when the fact-check API key is missing and when nothing matches', () => {
+    factChecks.state.set({ status: 'missing-key' });
+    fixture.detectChanges();
+    expect(
+      getElementByTestId(fixture, 'fact-check-missing-key').nativeElement.textContent,
+    ).toContain('API key');
+
+    factChecks.state.set({ status: 'empty' });
+    fixture.detectChanges();
+    expect(getElementByTestId(fixture, 'fact-check-empty').nativeElement.textContent).toContain(
+      'No fact checks were found',
     );
   });
 });

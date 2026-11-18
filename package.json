@@ -3,9 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/ensure-environment.mjs",
     "start": "ng serve",
+    "prebuild": "node scripts/ensure-environment.mjs",
     "build": "ng build",
+    "prewatch": "node scripts/ensure-environment.mjs",
     "watch": "ng build --watch --configuration development",
+    "pretest": "node scripts/ensure-environment.mjs",
     "test": "ng test",
     "prettier": "npx prettier . --write"
   },
