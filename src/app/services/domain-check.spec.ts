@@ -5,6 +5,7 @@ import {
   extractDomain,
   mapRdapDomain,
   pluralCategory,
+  wwwPublicSuffixFallback,
   type RdapDomain,
 } from './domain-check';
 
@@ -39,18 +40,48 @@ const tvn24: RdapDomain = {
 };
 
 describe('extractDomain', () => {
-  it('reads the host from scheme-less links and strips www', () => {
+  it('reads the registered domain, including subdomains and multi-part suffixes', () => {
     expect(extractDomain('nyt.com/weird-article')).toBe('nyt.com');
     expect(extractDomain('https://www.BBC.co.uk/news/world-123?at_medium=RSS#top')).toBe(
       'bbc.co.uk',
     );
     expect(extractDomain('tvn24.pl/swiat/artykul,123')).toBe('tvn24.pl');
-    expect(extractDomain('https://news.example.com:8443/a-long-path')).toBe('news.example.com');
+    expect(extractDomain('https://news.example.com:8443/a-long-path')).toBe('example.com');
+    expect(
+      extractDomain(
+        'https://przegladsportowy.onet.pl/siatkowka/tauron-liga-siatkarzy/wilfredo-leon/wh8ylrx',
+      ),
+    ).toBe('onet.pl');
+    expect(extractDomain('https://sub.domain.example.co.uk/path?q=1#f')).toBe('example.co.uk');
+    expect(extractDomain('news.example.com.pl:8080/a/')).toBe('example.com.pl');
+    expect(extractDomain('https://www.example.com.pl/')).toBe('example.com.pl');
+    expect(extractDomain('https://m.wyborcza.pl/7,75398,1.html')).toBe('wyborcza.pl');
+    expect(extractDomain('https://www.gov.pl/web')).toBe('www.gov.pl');
+    expect(extractDomain('https://www.nhs.uk/news')).toBe('www.nhs.uk');
+    expect(extractDomain('  https://www.bbc.co.uk/news  ')).toBe('bbc.co.uk');
+    expect(extractDomain('żółw.pl/art')).toBe('xn--w-uga1v8h.pl');
+    expect(extractDomain('https://пример.рф/новость')).toBe('xn--e1afmkfd.xn--p1ai');
+  });
+
+  it('keeps a public suffix that was entered on its own', () => {
+    expect(extractDomain('https://gov.pl')).toBe('gov.pl');
+    expect(extractDomain('co.uk')).toBe('co.uk');
   });
 
   it('rejects links that are not news URLs', () => {
     expect(extractDomain('javascript:alert(1)')).toBeNull();
     expect(extractDomain('not a url')).toBeNull();
+    expect(extractDomain('   ')).toBeNull();
+  });
+});
+
+describe('wwwPublicSuffixFallback', () => {
+  it('falls back only for www plus a public suffix', () => {
+    expect(wwwPublicSuffixFallback('www.nhs.uk')).toBe('nhs.uk');
+    expect(wwwPublicSuffixFallback('www.gov.pl')).toBe('gov.pl');
+    expect(wwwPublicSuffixFallback('bbc.co.uk')).toBeNull();
+    expect(wwwPublicSuffixFallback('www.bbc.co.uk')).toBeNull();
+    expect(wwwPublicSuffixFallback('onet.pl')).toBeNull();
   });
 });
 
@@ -96,6 +127,32 @@ describe('mapRdapDomain', () => {
     expect(result.registrantCountry).toBeNull();
     expect(result.status).toEqual(['client transfer prohibited']);
   });
+
+  it('shows the unicode name and does not treat an individual as an organization', () => {
+    const result = mapRdapDomain(
+      {
+        ldhName: 'XN--W-UGA1V8H.PL',
+        unicodeName: 'żółw.pl',
+        entities: [
+          {
+            roles: ['registrant'],
+            vcardArray: [
+              'vcard',
+              [
+                ['fn', {}, 'text', 'Jan Kowalski'],
+                ['kind', {}, 'text', 'individual'],
+              ],
+            ],
+          },
+        ],
+      },
+      'xn--w-uga1v8h.pl',
+      now,
+    );
+
+    expect(result.domain).toBe('żółw.pl');
+    expect(result.registrantOrganization).toBeNull();
+  });
 });
 
 describe('domainAge', () => {
@@ -137,6 +194,14 @@ describe('classifyRdapError', () => {
       ),
     ).toBe('unsupported');
     expect(classifyRdapError(new HttpErrorResponse({ status: 404, error: {} }))).toBe('not-found');
+    expect(
+      classifyRdapError(
+        new HttpErrorResponse({
+          status: 404,
+          error: { title: 'Error processing request', description: ['Not found'] },
+        }),
+      ),
+    ).toBe('not-found');
     expect(classifyRdapError(new HttpErrorResponse({ status: 429 }))).toBe('rate-limit');
     expect(classifyRdapError(new HttpErrorResponse({ status: 0 }))).toBe('network');
     expect(classifyRdapError(new HttpErrorResponse({ status: 503 }))).toBe('unavailable');

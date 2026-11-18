@@ -63,6 +63,10 @@ export class LanguageService {
     this.language.set(lang);
     this.translate.use(lang);
     this.document.documentElement.lang = lang;
+    const title = this.translate.instant('TITLE');
+    if (title && title !== 'TITLE') {
+      this.document.title = title;
+    }
     if (!persist) {
       return;
     }

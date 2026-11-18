@@ -48,6 +48,7 @@ describe('LanguageService', () => {
     expect(translate.getCurrentLang()).toBe('pl');
     expect(translate.instant('TITLE')).toBe('De-Dezinformacja');
     expect(document.documentElement.lang).toBe('pl');
+    expect(document.title).toBe('De-Dezinformacja');
     expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBeNull();
   });
 
@@ -61,6 +62,7 @@ describe('LanguageService', () => {
     expect(translate.getCurrentLang()).toBe('en');
     expect(translate.instant('TITLE')).toBe('De-Disinformation');
     expect(document.documentElement.lang).toBe('en');
+    expect(document.title).toBe('De-Disinformation');
   });
 
   it('ignores an unsupported stored value', () => {
@@ -84,6 +86,7 @@ describe('LanguageService', () => {
     expect(translate.getCurrentLang()).toBe('en');
     expect(translate.instant('TITLE')).toBe('De-Disinformation');
     expect(document.documentElement.lang).toBe('en');
+    expect(document.title).toBe('De-Disinformation');
   });
 
   it('keeps the selected language when storage writes fail', () => {

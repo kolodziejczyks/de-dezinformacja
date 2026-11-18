@@ -2,7 +2,7 @@
 
 Quick background check of a news link or news website. The interface is available in Polish and English.
 
-Enter a news link and `BaseCheckService` looks up that domain's registration data over RDAP, the HTTP/JSON successor of WHOIS. The browser calls the [rdap.org](https://rdap.org/) bootstrap (`https://rdap.org/domain/<domain>`), which redirects to the registry's RDAP server. The result card shows the registrar, registration date, domain age, expiry, last update, registrant organization and country when the registry publishes them, nameservers, and status.
+Enter a news link and `BaseCheckService` looks up that site's registered domain over RDAP, the HTTP/JSON successor of WHOIS. Subdomains are reduced to the registrable name, and multi-part public suffixes stay intact: `przegladsportowy.onet.pl` is queried as `onet.pl`, `news.bbc.co.uk` as `bbc.co.uk`, and `news.example.com.pl` as `example.com.pl`. A host that is only `www` plus a public suffix (`www.gov.pl`) is queried as registered. The browser calls the [rdap.org](https://rdap.org/) bootstrap (`https://rdap.org/domain/<domain>`), which redirects to the registry's RDAP server. The result card shows the registrar, registration date, domain age, expiry, last update, registrant organization and country when the registry publishes them, nameservers, and status.
 
 Registries often redact contact data. Thin registries such as Verisign (`.com`, `.net`) do not publish the registrant at all. A TLD with no RDAP service, a rate limit, or a network failure is explained on the card instead of shown as an empty result.
 
