@@ -7,7 +7,7 @@ import PL from '../../../public/i18n/pl.json';
 export const SUPPORTED_LANGUAGES = ['pl', 'en'] as const;
 export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
-export const LANGUAGE_STORAGE_KEY = 'de-dezinformacja.language';
+export const LANGUAGE_STORAGE_KEY = 'ddezinformacja.language';
 export const DEFAULT_LANGUAGE: AppLanguage = 'pl';
 
 export function isAppLanguage(value: unknown): value is AppLanguage {

@@ -37,14 +37,14 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
 
     expect(document.documentElement.lang).toBe('en');
-    expect(document.title).toBe('De-Disinformation');
+    expect(document.title).toBe('Ddezinformacja');
     expect(document.querySelector('meta[name="application-name"]')?.getAttribute('content')).toBe(
-      'De-Disinformation',
+      'Ddezinformacja',
     );
     expect(document.getElementById('site-manifest')?.getAttribute('href')).toBe(
       'manifest.en.webmanifest',
     );
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('De-Disinformation');
+    expect(fixture.nativeElement.textContent).toContain('Ddezinformacja');
   });
 });
