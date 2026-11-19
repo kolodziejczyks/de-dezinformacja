@@ -82,6 +82,11 @@ export function extractDomain(value: string): string | null {
   return getDomain(hostname, PUBLIC_SUFFIX) ?? hostname;
 }
 
+/** Full hostname of a news link, including subdomains. `www.bbc.co.uk` stays `www.bbc.co.uk`. */
+export function extractHostname(value: string): string | null {
+  return newsHostname(value);
+}
+
 /**
  * Second RDAP name when `domain` is exactly `www.<public suffix>`.
  * Tried only after that name is not found: `www.nhs.uk` has no record and

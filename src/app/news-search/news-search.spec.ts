@@ -8,7 +8,10 @@ import EN from '../../../public/i18n/en.json';
 import PL from '../../../public/i18n/pl.json';
 import { getElementByTestId, typeInto } from '../../../testing';
 import { BaseCheckService } from '../services/base-check.service';
+import { CertCheckState, CertCheckService } from '../services/cert-check.service';
 import { DomainCheckState } from '../services/domain-check';
+import { TrancoCheckState, TrancoCheckService } from '../services/tranco-check.service';
+import { WaybackCheckState, WaybackCheckService } from '../services/wayback-check.service';
 import { NewsSearch, finishSentence, plainStatusKey } from './news-search';
 
 class FakeBaseCheckService {
@@ -20,19 +23,37 @@ class FakeBaseCheckService {
   }
 }
 
+class FakeLookup<T extends { status: string }> {
+  readonly state = signal<T>({ status: 'idle' } as T);
+  readonly checked: string[] = [];
+
+  check(rawLink: string): void {
+    this.checked.push(rawLink);
+  }
+}
+
 describe('NewsSearch', () => {
   let component: NewsSearch;
   let fixture: ComponentFixture<NewsSearch>;
   let checks: FakeBaseCheckService;
+  let cert: FakeLookup<CertCheckState>;
+  let wayback: FakeLookup<WaybackCheckState>;
+  let tranco: FakeLookup<TrancoCheckState>;
 
   beforeEach(async () => {
     checks = new FakeBaseCheckService();
+    cert = new FakeLookup<CertCheckState>();
+    wayback = new FakeLookup<WaybackCheckState>();
+    tranco = new FakeLookup<TrancoCheckState>();
     await TestBed.configureTestingModule({
       imports: [NewsSearch],
       providers: [
         provideZonelessChangeDetection(),
         provideTranslateService({ lang: 'en', fallbackLang: 'en' }),
         { provide: BaseCheckService, useValue: checks },
+        { provide: CertCheckService, useValue: cert },
+        { provide: WaybackCheckService, useValue: wayback },
+        { provide: TrancoCheckService, useValue: tranco },
       ],
     }).compileComponents();
 
@@ -134,6 +155,9 @@ describe('NewsSearch', () => {
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news']);
+    expect(cert.checked).toEqual(['https://www.bbc.co.uk/news']);
+    expect(wayback.checked).toEqual(['https://www.bbc.co.uk/news']);
+    expect(tranco.checked).toEqual(['https://www.bbc.co.uk/news']);
 
     typeInto(fixture, 'news-search-input', 'tvn24.pl/swiat/artykul,123');
     fixture.nativeElement
@@ -141,6 +165,9 @@ describe('NewsSearch', () => {
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
     expect(checks.checked).toEqual(['https://www.bbc.co.uk/news', 'tvn24.pl/swiat/artykul,123']);
+    expect(cert.checked).toEqual(checks.checked);
+    expect(wayback.checked).toEqual(checks.checked);
+    expect(tranco.checked).toEqual(checks.checked);
   });
 
   it('trims surrounding whitespace before looking the link up', () => {
@@ -157,6 +184,9 @@ describe('NewsSearch', () => {
     getElementByTestId(fixture, 'news-search-submit').nativeElement.click();
 
     expect(checks.checked).toEqual([]);
+    expect(cert.checked).toEqual([]);
+    expect(wayback.checked).toEqual([]);
+    expect(tranco.checked).toEqual([]);
   });
 
   it('shows registration data returned by the check', () => {
@@ -394,5 +424,105 @@ describe('NewsSearch', () => {
     expect(
       getElementByTestId(fixture, 'news-search-result').nativeElement.getAttribute('aria-busy'),
     ).toBe('true');
+  });
+
+  it('shows a CERT warning, a saved copy, and a Tranco rank in Polish', () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.use('pl');
+    checks.state.set({ status: 'loading', domain: 'evil.example' });
+    cert.state.set({
+      status: 'success',
+      result: {
+        domain: 'login.evil.example',
+        listed: true,
+        matches: ['evil.example'],
+        listUpdatedAt: '2026-11-19T14:15:07.000Z',
+      },
+    });
+    wayback.state.set({
+      status: 'success',
+      result: {
+        domain: 'evil.example',
+        pageUrl: 'login.evil.example/reset',
+        domainCapture: {
+          timestamp: '20200102030405',
+          date: '2020-01-02',
+          original: 'http://login.evil.example/',
+          archiveUrl: 'https://web.archive.org/web/20200102030405/http://login.evil.example/',
+        },
+        pageCapture: null,
+        pageChecked: true,
+        pageError: false,
+      },
+    });
+    tranco.state.set({
+      status: 'success',
+      result: { domain: 'evil.example', rank: 5669, date: '2026-11-18' },
+    });
+    fixture.detectChanges();
+
+    const listed = getElementByTestId(fixture, 'cert-listed').nativeElement.textContent;
+    expect(listed).toContain('Ta nazwa jest na Liście ostrzeżeń CERT Polska');
+    expect(listed).toContain('evil.example');
+    expect(getElementByTestId(fixture, 'cert-note').nativeElement.textContent).toContain(
+      'Nie mówi, czy news jest prawdziwy.',
+    );
+    expect(getElementByTestId(fixture, 'wayback-domain').nativeElement.textContent).toContain(
+      '2020-01-02',
+    );
+    expect(
+      getElementByTestId(fixture, 'wayback-domain-link').nativeElement.getAttribute('href'),
+    ).toContain('web.archive.org/web/20200102030405/');
+    expect(getElementByTestId(fixture, 'wayback-page').nativeElement.textContent).toContain(
+      'Tej strony nie zapisano.',
+    );
+    expect(getElementByTestId(fixture, 'tranco-rank').nativeElement.textContent).toMatch(
+      /5\s?669|5669/,
+    );
+  });
+
+  it('shows a calm CERT miss, no archive, and an unlisted Tranco name', () => {
+    checks.state.set({ status: 'loading', domain: 'tvn24.pl' });
+    cert.state.set({
+      status: 'success',
+      result: {
+        domain: 'tvn24.pl',
+        listed: false,
+        matches: [],
+        listUpdatedAt: null,
+      },
+    });
+    wayback.state.set({
+      status: 'success',
+      result: {
+        domain: 'tvn24.pl',
+        pageUrl: null,
+        domainCapture: null,
+        pageCapture: null,
+        pageChecked: false,
+        pageError: false,
+      },
+    });
+    tranco.state.set({
+      status: 'success',
+      result: { domain: 'tvn24.pl', rank: null, date: null },
+    });
+    fixture.detectChanges();
+
+    expect(getElementByTestId(fixture, 'cert-clear').nativeElement.textContent).toContain(
+      'Not on the CERT Polska warning list',
+    );
+    expect(getElementByTestId(fixture, 'cert-note').nativeElement.textContent).toContain(
+      'phishing and scams',
+    );
+    expect(getElementByTestId(fixture, 'cert-listed')).not.toBeTruthy();
+    expect(getElementByTestId(fixture, 'wayback-none').nativeElement.textContent).toContain(
+      'no saved copy',
+    );
+    expect(getElementByTestId(fixture, 'tranco-unlisted').nativeElement.textContent).toContain(
+      'Not in the top 1 million',
+    );
+    const hint = getElementByTestId(fixture, 'tranco-hint');
+    expect(hint.injector.get(MatTooltip).message).toContain('Rank 1 is the most visited');
   });
 });

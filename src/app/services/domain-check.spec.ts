@@ -3,6 +3,7 @@ import {
   classifyRdapError,
   domainAge,
   extractDomain,
+  extractHostname,
   mapRdapDomain,
   pluralCategory,
   wwwPublicSuffixFallback,
@@ -72,6 +73,14 @@ describe('extractDomain', () => {
     expect(extractDomain('javascript:alert(1)')).toBeNull();
     expect(extractDomain('not a url')).toBeNull();
     expect(extractDomain('   ')).toBeNull();
+  });
+});
+
+describe('extractHostname', () => {
+  it('keeps the host the link was opened on', () => {
+    expect(extractHostname('https://www.BBC.co.uk/news')).toBe('www.bbc.co.uk');
+    expect(extractHostname('przegladsportowy.onet.pl/a')).toBe('przegladsportowy.onet.pl');
+    expect(extractHostname('not a url')).toBeNull();
   });
 });
 

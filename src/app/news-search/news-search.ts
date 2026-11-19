@@ -1,57 +1,26 @@
-import { ChangeDetectionStrategy, Component, Directive, HostListener, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatTooltip } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { CertCard } from '../checks/cert-card';
+import { TrancoCard } from '../checks/tranco-card';
+import { WaybackCard } from '../checks/wayback-card';
 import { BaseCheckService } from '../services/base-check.service';
+import { CertCheckService } from '../services/cert-check.service';
 import {
   DomainAge,
   DomainRegistration,
   formatUtcDate,
   pluralCategory,
 } from '../services/domain-check';
+import { TrancoCheckService } from '../services/tranco-check.service';
+import { WaybackCheckService } from '../services/wayback-check.service';
+import { TipButton } from '../tip-button';
 import { newsLinkValidator, requiredNewsLink } from './news-link-validator';
-
-/** Info button: the hint is a tooltip on hover, keyboard focus, and tap. */
-@Directive({
-  selector: 'button[appTip]',
-  hostDirectives: [
-    {
-      directive: MatTooltip,
-      inputs: ['matTooltip'],
-    },
-  ],
-})
-export class TipButton {
-  private readonly tooltip = inject(MatTooltip);
-  private openBeforePointer = false;
-
-  constructor() {
-    this.tooltip.touchGestures = 'off';
-    this.tooltip.tooltipClass = 'hint-tooltip';
-    this.tooltip.position = 'above';
-    this.tooltip.showDelay = 0;
-    this.tooltip.hideDelay = 0;
-  }
-
-  @HostListener('pointerdown')
-  remember(): void {
-    this.openBeforePointer = this.tooltip._isTooltipVisible();
-  }
-
-  @HostListener('click')
-  toggle(): void {
-    if (this.openBeforePointer) {
-      this.tooltip.hide(0);
-    } else {
-      this.tooltip.show(0);
-    }
-  }
-}
 
 @Component({
   selector: 'app-news-search',
@@ -67,6 +36,9 @@ export class TipButton {
     MatCard,
     MatProgressBar,
     TipButton,
+    CertCard,
+    WaybackCard,
+    TrancoCard,
   ],
   templateUrl: './news-search.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -76,6 +48,9 @@ export class NewsSearch {
   private readonly translate = inject(TranslateService);
 
   readonly baseCheck = inject(BaseCheckService);
+  readonly certCheck = inject(CertCheckService);
+  readonly waybackCheck = inject(WaybackCheckService);
+  readonly trancoCheck = inject(TrancoCheckService);
   readonly formatUtcDate = formatUtcDate;
 
   readonly newsFormControl = new FormControl('', {
@@ -94,6 +69,19 @@ export class NewsSearch {
       return;
     }
     this.baseCheck.check(trimmed);
+    this.certCheck.check(trimmed);
+    this.waybackCheck.check(trimmed);
+    this.trancoCheck.check(trimmed);
+  }
+
+  /** The report stays up while any check is still running or has a result. */
+  showResults(): boolean {
+    return (
+      this.baseCheck.state().status !== 'idle' ||
+      this.certCheck.state().status !== 'idle' ||
+      this.waybackCheck.state().status !== 'idle' ||
+      this.trancoCheck.state().status !== 'idle'
+    );
   }
 
   /** A domain registered less than a year ago. Uses the age already on the record. */

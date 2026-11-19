@@ -1,0 +1,93 @@
+@if (tranco.state(); as state) {
+  @if (state.status !== 'idle') {
+    <mat-card
+      class="report-card"
+      appearance="outlined"
+      data-testid="tranco-card"
+      [attr.aria-busy]="state.status === 'loading' ? true : null"
+    >
+      @switch (state.status) {
+        @case ('loading') {
+          <div class="report-card__body" data-testid="tranco-loading">
+            <mat-progress-bar
+              class="report-card__progress"
+              mode="indeterminate"
+              aria-hidden="true"
+            />
+            <p class="report-card__status-text">
+              {{ 'TRANCO.LOADING' | translate: { domain: state.domain } }}
+            </p>
+          </div>
+        }
+        @case ('error') {
+          <div class="report-card__body" data-testid="tranco-error">
+            <header class="report-card__header">
+              <span class="report-card__glyph report-card__glyph--error" aria-hidden="true">
+                <mat-icon fontIcon="error" />
+              </span>
+              <div class="report-card__heading">
+                <p class="report-card__kicker">{{ state.domain }}</p>
+                <h2 class="report-card__title report-card__title--compact">
+                  {{ 'TRANCO.ERROR_HEADING' | translate }}
+                </h2>
+              </div>
+            </header>
+            <p class="report-card__message">
+              @switch (state.kind) {
+                @case ('network') {
+                  {{ 'TRANCO.ERROR.NETWORK' | translate }}
+                }
+                @case ('rate-limit') {
+                  {{ 'TRANCO.ERROR.RATE_LIMIT' | translate }}
+                }
+                @default {
+                  {{ 'TRANCO.ERROR.UNAVAILABLE' | translate }}
+                }
+              }
+            </p>
+          </div>
+        }
+        @case ('success') {
+          <div class="report-card__body">
+            <header class="report-card__header">
+              <span class="report-card__glyph" aria-hidden="true">
+                <mat-icon fontIcon="leaderboard" />
+              </span>
+              <div class="report-card__heading">
+                <p class="kicker-line">
+                  <span class="report-card__kicker">{{ 'TRANCO.SECTION' | translate }}</span>
+                  <button
+                    appTip
+                    type="button"
+                    class="hint hint--inline"
+                    data-testid="tranco-hint"
+                    [attr.aria-label]="'TRANCO.SECTION' | translate"
+                    [matTooltip]="'TRANCO.HINT' | translate"
+                  >
+                    <mat-icon aria-hidden="true" fontIcon="info" />
+                  </button>
+                </p>
+                <h2 class="report-card__title report-card__title--compact">
+                  @if (state.result.rank !== null) {
+                    <span data-testid="tranco-rank">{{
+                      'TRANCO.RANK' | translate: { rank: rankText(state.result.rank) }
+                    }}</span>
+                  } @else {
+                    <span data-testid="tranco-unlisted">{{ 'TRANCO.UNLISTED' | translate }}</span>
+                  }
+                </h2>
+              </div>
+            </header>
+            <p class="report-card__summary">{{ state.result.domain }}</p>
+            <p class="report-card__source">
+              @if (state.result.date; as date) {
+                {{ 'TRANCO.AS_OF' | translate: { date: date } }}
+              }
+              {{ 'TRANCO.SOURCE' | translate }}
+            </p>
+          </div>
+        }
+      }
+    </mat-card>
+  }
+}
