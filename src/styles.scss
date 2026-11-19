@@ -1,6 +1,29 @@
 @use '@angular/material' as mat;
 @use './theme/palette' as palette;
 
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 html {
   --page-max: 56rem;
   color-scheme: light dark;
@@ -14,17 +37,17 @@ html {
       ),
       typography: (
         plain-family: (
-          'Source Sans 3',
+          'IBM Plex Sans',
           'Segoe UI',
           sans-serif,
         ),
         brand-family: (
-          Newsreader,
-          Georgia,
-          serif,
+          'IBM Plex Sans',
+          'Segoe UI',
+          sans-serif,
         ),
-        bold-weight: 650,
-        medium-weight: 560,
+        bold-weight: 600,
+        medium-weight: 500,
         regular-weight: 400,
       ),
       density: 0,
@@ -110,7 +133,7 @@ body {
   margin: 0;
   color: var(--mat-sys-on-surface-variant);
   font: var(--mat-sys-label-medium);
-  font-weight: 650;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
@@ -118,7 +141,7 @@ body {
   margin: 0.15rem 0 0;
   font-family: var(--mat-sys-headline-small-font);
   font-size: clamp(1.45rem, 2.4vw, 1.85rem);
-  font-weight: 560;
+  font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
@@ -165,7 +188,7 @@ body {
 
 .signal__title {
   display: block;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .signal__why {
@@ -258,7 +281,7 @@ button.token__code:focus-visible {
 .fact dd {
   margin: 0.15rem 0 0;
   font-size: 1.05rem;
-  font-weight: 560;
+  font-weight: 600;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }

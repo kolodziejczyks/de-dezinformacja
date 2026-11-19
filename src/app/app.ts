@@ -20,6 +20,7 @@ export class App {
 
   constructor() {
     this.language.initialize();
+    this.syncDocumentMeta();
     effect(() => {
       this.language.language();
       this.syncDocumentMeta();
@@ -29,10 +30,21 @@ export class App {
   private syncDocumentMeta(): void {
     const title = this.translate.instant('TITLE');
     const description = this.translate.instant('META.DESCRIPTION');
-    this.document.title = title;
+    if (title && title !== 'TITLE') {
+      this.document.title = title;
+      this.setMeta('name', 'application-name', title);
+      this.setMeta('name', 'apple-mobile-web-app-title', title);
+    }
     this.setMeta('name', 'description', description);
     this.setMeta('property', 'og:title', title);
     this.setMeta('property', 'og:description', description);
+    const manifest = this.document.getElementById('site-manifest');
+    if (manifest) {
+      manifest.setAttribute(
+        'href',
+        this.language.language() === 'en' ? 'manifest.en.webmanifest' : 'manifest.webmanifest',
+      );
+    }
   }
 
   private setMeta(attr: 'name' | 'property', key: string, content: string): void {

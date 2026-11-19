@@ -6,7 +6,7 @@
   margin: 0;
   color: var(--mat-sys-primary);
   font: var(--mat-sys-label-large);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .hero__title {
@@ -14,9 +14,9 @@
   max-width: 16ch;
   font-family: var(--mat-sys-display-small-font);
   font-size: clamp(2.05rem, 5vw, 3.05rem);
-  font-weight: 560;
+  font-weight: 600;
   line-height: 1.08;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -56,7 +56,7 @@
   margin: 0;
   font-family: var(--mat-sys-title-medium-font);
   font-size: 1.05rem;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .idle__list {

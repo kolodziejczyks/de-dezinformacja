@@ -6,7 +6,7 @@ Enter a news link and `BaseCheckService` looks up that site's registered domain 
 
 Registries often redact contact data. Thin registries such as Verisign (`.com`, `.net`) do not publish the registrant at all. A domain registered less than a year ago, and a registrant with no published organization, are marked on the card. The card opens with a plain-language summary. Each field label has an info button with a one-line explanation, and common status codes show their meaning the same way. A TLD with no RDAP service, a rate limit, or a network failure is explained on the card instead of shown as an empty result.
 
-The page follows the system light or dark setting. Result sections share the `.report-card` styles in `src/styles.scss`, so another check can use the same card.
+The page uses IBM Plex Sans (self-hosted, regular through semibold) and follows the system light or dark setting. Result sections share the `.report-card` styles in `src/styles.scss`, so another check can use the same card.
 
 The language toggle is stored in `localStorage` and restored on startup. It defaults to Polish (`pl`).
 
