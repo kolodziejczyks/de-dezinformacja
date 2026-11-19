@@ -3,6 +3,7 @@
 # Compiled output
 /dist
 /server/dist
+/server/node_modules
 /tmp
 /out-tsc
 /bazel-out
