@@ -1,4 +1,4 @@
-# Ddezinformacja
+# DDezinformacja
 
 Check the public registration record of a news link or a news site. The interface is Polish by default, with an English toggle.
 

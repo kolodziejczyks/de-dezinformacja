@@ -28,11 +28,14 @@
   height: 1.75rem;
   flex: 0 0 auto;
   color: var(--mat-sys-primary);
-  fill: currentColor;
 }
 
-.brand__bar {
-  fill: var(--mat-sys-on-primary);
+.brand__mark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .brand__name {

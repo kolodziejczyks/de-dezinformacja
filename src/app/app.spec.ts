@@ -37,14 +37,14 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
 
     expect(document.documentElement.lang).toBe('en');
-    expect(document.title).toBe('Ddezinformacja');
+    expect(document.title).toBe('DDezinformacja');
     expect(document.querySelector('meta[name="application-name"]')?.getAttribute('content')).toBe(
-      'Ddezinformacja',
+      'DDezinformacja',
     );
     expect(document.getElementById('site-manifest')?.getAttribute('href')).toBe(
       'manifest.en.webmanifest',
     );
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Ddezinformacja');
+    expect(fixture.nativeElement.textContent).toContain('DDezinformacja');
   });
 });
