@@ -140,18 +140,32 @@
                   </div>
                 </header>
 
+                <p class="report-card__summary" data-testid="news-search-summary">
+                  {{ summary(state.result) }}
+                </p>
+
                 @if (isYoungDomain(state.result.age) || isOwnerHidden(state.result)) {
                   <ul class="signals" [attr.aria-label]="'CHECK.SIGNALS' | translate">
                     @if (isYoungDomain(state.result.age)) {
                       <li class="signal signal--caution" data-testid="news-search-young">
                         <mat-icon aria-hidden="true" fontIcon="schedule" />
-                        {{ 'CHECK.YOUNG_DOMAIN' | translate }}
+                        <span>
+                          <span class="signal__title">{{ 'CHECK.YOUNG_DOMAIN' | translate }}</span>
+                          <span class="signal__why">{{
+                            'CHECK.YOUNG_DOMAIN_WHY' | translate
+                          }}</span>
+                        </span>
                       </li>
                     }
                     @if (isOwnerHidden(state.result)) {
                       <li class="signal signal--quiet" data-testid="news-search-owner-hidden">
                         <mat-icon aria-hidden="true" fontIcon="visibility_off" />
-                        {{ 'CHECK.OWNER_HIDDEN' | translate }}
+                        <span>
+                          <span class="signal__title">{{ 'CHECK.OWNER_HIDDEN' | translate }}</span>
+                          <span class="signal__why">{{
+                            'CHECK.OWNER_HIDDEN_WHY' | translate
+                          }}</span>
+                        </span>
                       </li>
                     }
                   </ul>
@@ -167,6 +181,7 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.AGE' | translate }}</p>
                   </div>
                   <div class="fact">
                     <dt>{{ 'CHECK.REGISTERED' | translate }}</dt>
@@ -177,6 +192,7 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.REGISTERED' | translate }}</p>
                   </div>
                   <div class="fact" [class.fact--quiet]="isOwnerHidden(state.result)">
                     <dt>{{ 'CHECK.ORGANIZATION' | translate }}</dt>
@@ -187,16 +203,18 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.ORGANIZATION' | translate }}</p>
                   </div>
                   <div class="fact">
                     <dt>{{ 'CHECK.COUNTRY' | translate }}</dt>
                     <dd data-testid="news-search-country">
                       @if (state.result.registrantCountry; as country) {
-                        {{ country }}
+                        {{ countryLabel(country) }}
                       } @else {
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.COUNTRY' | translate }}</p>
                   </div>
                   <div class="fact">
                     <dt>{{ 'CHECK.REGISTRAR' | translate }}</dt>
@@ -207,6 +225,7 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.REGISTRAR' | translate }}</p>
                   </div>
                   <div class="fact">
                     <dt>{{ 'CHECK.EXPIRES' | translate }}</dt>
@@ -217,6 +236,7 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.EXPIRES' | translate }}</p>
                   </div>
                   <div class="fact fact--span-2">
                     <dt>{{ 'CHECK.UPDATED' | translate }}</dt>
@@ -227,6 +247,7 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.UPDATED' | translate }}</p>
                   </div>
                   <div class="fact fact--wide">
                     <dt>{{ 'CHECK.STATUS' | translate }}</dt>
@@ -234,13 +255,19 @@
                       @if (state.result.status.length) {
                         <ul class="tokens">
                           @for (item of state.result.status; track item) {
-                            <li>{{ item }}</li>
+                            <li>
+                              <span class="token__code">{{ item }}</span>
+                              @if (statusMeaning(item); as meaning) {
+                                <span class="token__meaning">{{ meaning }}</span>
+                              }
+                            </li>
                           }
                         </ul>
                       } @else {
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.STATUS' | translate }}</p>
                   </div>
                   <div class="fact fact--wide">
                     <dt>{{ 'CHECK.NAMESERVERS' | translate }}</dt>
@@ -255,6 +282,7 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
+                    <p class="fact__hint">{{ 'CHECK.HINT.NAMESERVERS' | translate }}</p>
                   </div>
                 </dl>
                 <p class="report-card__source">{{ 'CHECK.SOURCE' | translate }}</p>

@@ -4,10 +4,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 import EN from '../../../public/i18n/en.json';
+import PL from '../../../public/i18n/pl.json';
 import { getElementByTestId, typeInto } from '../../../testing';
 import { BaseCheckService } from '../services/base-check.service';
 import { DomainCheckState } from '../services/domain-check';
-import { NewsSearch } from './news-search';
+import { NewsSearch, finishSentence, plainStatusKey } from './news-search';
 
 class FakeBaseCheckService {
   readonly state = signal<DomainCheckState>({ status: 'idle' });
@@ -36,6 +37,7 @@ describe('NewsSearch', () => {
 
     const translate = TestBed.inject(TranslateService);
     translate.setTranslation('en', EN);
+    translate.setTranslation('pl', PL);
     translate.use('en');
 
     fixture = TestBed.createComponent(NewsSearch);
@@ -190,14 +192,92 @@ describe('NewsSearch', () => {
     expect(
       getElementByTestId(fixture, 'news-search-organization').nativeElement.textContent,
     ).toContain('TVN S.A.');
-    expect(getElementByTestId(fixture, 'news-search-country').nativeElement.textContent).toContain(
-      'PL',
-    );
+    const country = getElementByTestId(fixture, 'news-search-country').nativeElement.textContent;
+    expect(country).toContain('Poland');
+    expect(country).toContain('PL');
     expect(
       getElementByTestId(fixture, 'news-search-nameservers').nativeElement.textContent,
     ).toContain('ns-951.awsdns-54.net');
+    expect(getElementByTestId(fixture, 'news-search-result').nativeElement.textContent).toContain(
+      'They often show the hosting company.',
+    );
+    const status = getElementByTestId(fixture, 'news-search-status').nativeElement.textContent;
+    expect(status).toContain('registered');
+    expect(status).toContain('The name is in use.');
+    const summary = getElementByTestId(fixture, 'news-search-summary').nativeElement.textContent;
+    expect(summary).toContain('The name tvn24.pl has been registered for 26 years and 73 days.');
+    expect(summary).toContain('The record lists the organization TVN S.A. (Poland).');
+    expect(summary).toContain('The name was registered through premium.pl Sp. z o.o.');
     expect(getElementByTestId(fixture, 'news-search-young')).not.toBeTruthy();
     expect(getElementByTestId(fixture, 'news-search-owner-hidden')).not.toBeTruthy();
+  });
+
+  it('reads the same record in Polish', () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.use('pl');
+    checks.state.set({
+      status: 'success',
+      result: {
+        domain: 'tvn24.pl',
+        registrar: 'premium.pl Sp. z o.o.',
+        registeredAt: '2000-09-06T11:00:00Z',
+        age: { years: 26, days: 73 },
+        expiresAt: '2027-09-05T12:00:00Z',
+        updatedAt: '2026-08-11T15:15:46Z',
+        registrantOrganization: 'TVN S.A.',
+        registrantCountry: 'PL',
+        nameservers: ['ns-951.awsdns-54.net'],
+        status: ['clientTransferProhibited'],
+      },
+    });
+    fixture.detectChanges();
+
+    const summary = getElementByTestId(fixture, 'news-search-summary').nativeElement.textContent;
+    expect(summary).toContain('Nazwa tvn24.pl jest zarejestrowana od 26 lat i 73 dni.');
+    expect(summary).toContain('Rejestr podaje organizację TVN S.A. (Polska).');
+    expect(summary).toContain('Nazwę zarejestrowano przez premium.pl Sp. z o.o.');
+    expect(getElementByTestId(fixture, 'news-search-status').nativeElement.textContent).toContain(
+      'Firma, która zarejestrowała nazwę, zablokowała przeniesienie jej gdzie indziej.',
+    );
+    expect(getElementByTestId(fixture, 'news-search-country').nativeElement.textContent).toContain(
+      'Polska (PL)',
+    );
+  });
+
+  it('leaves an unknown status code without an invented meaning', () => {
+    checks.state.set({
+      status: 'success',
+      result: {
+        domain: 'example.com',
+        registrar: 'MarkMonitor Inc.',
+        registeredAt: null,
+        age: null,
+        expiresAt: null,
+        updatedAt: null,
+        registrantOrganization: null,
+        registrantCountry: null,
+        nameservers: [],
+        status: ['someCustomFlag'],
+      },
+    });
+    fixture.detectChanges();
+
+    const status = getElementByTestId(fixture, 'news-search-status').nativeElement.textContent;
+    expect(status).toContain('someCustomFlag');
+    expect(status).not.toContain('CHECK.STATUS_TEXT');
+    expect(getElementByTestId(fixture, 'news-search-summary').nativeElement.textContent).toContain(
+      'The name was registered through MarkMonitor Inc.',
+    );
+    expect(
+      getElementByTestId(fixture, 'news-search-summary').nativeElement.textContent,
+    ).not.toContain('..');
+    expect(plainStatusKey('clientTransferProhibited')).toBe('client transfer prohibited');
+    expect(finishSentence('Nazwę zarejestrowano przez MarkMonitor Inc.')).toBe(
+      'Nazwę zarejestrowano przez MarkMonitor Inc.',
+    );
+    expect(finishSentence('Nazwa example.com jest zarejestrowana od 2 lat')).toBe(
+      'Nazwa example.com jest zarejestrowana od 2 lat.',
+    );
   });
 
   it('marks a domain under a year old and a registrant with no published organization', () => {
@@ -218,12 +298,18 @@ describe('NewsSearch', () => {
     });
     fixture.detectChanges();
 
-    expect(getElementByTestId(fixture, 'news-search-young').nativeElement.textContent).toContain(
-      'less than a year',
-    );
+    const young = getElementByTestId(fixture, 'news-search-young').nativeElement.textContent;
+    expect(young).toContain('less than a year');
+    expect(young).toContain('A large newsroom usually uses a name registered a long time ago.');
     expect(
       getElementByTestId(fixture, 'news-search-owner-hidden').nativeElement.textContent,
     ).toContain('Owner not published');
+    expect(
+      getElementByTestId(fixture, 'news-search-owner-hidden').nativeElement.textContent,
+    ).toContain('For .com and .net that is the usual case.');
+    const summary = getElementByTestId(fixture, 'news-search-summary').nativeElement.textContent;
+    expect(summary).toContain('The name fresh.example has been registered for 17 days.');
+    expect(summary).toContain('The record does not list an organization.');
     expect(getElementByTestId(fixture, 'news-search-age').nativeElement.textContent).toContain(
       '0 years, 17 days',
     );

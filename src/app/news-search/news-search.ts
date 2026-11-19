@@ -73,4 +73,98 @@ export class NewsSearch {
     const days = this.translate.instant(`CHECK.DAY_${pluralCategory(age.days, lang)}`);
     return `${age.years} ${years}, ${age.days} ${days}`;
   }
+
+  /** A few sentences a reader can follow before the field grid. */
+  summary(result: DomainRegistration): string {
+    const sentences = [
+      result.age
+        ? this.translate.instant('CHECK.SUMMARY.AGE', {
+            domain: result.domain,
+            age: this.summaryAge(result.age),
+          })
+        : this.translate.instant('CHECK.SUMMARY.NO_AGE', { domain: result.domain }),
+    ];
+    if (result.registrantOrganization) {
+      const country = result.registrantCountry ? this.countryName(result.registrantCountry) : null;
+      sentences.push(
+        country
+          ? this.translate.instant('CHECK.SUMMARY.ORG_COUNTRY', {
+              organization: result.registrantOrganization,
+              country,
+            })
+          : this.translate.instant('CHECK.SUMMARY.ORG', {
+              organization: result.registrantOrganization,
+            }),
+      );
+    } else {
+      sentences.push(this.translate.instant('CHECK.SUMMARY.NO_ORG'));
+    }
+    if (result.registrar) {
+      sentences.push(
+        this.translate.instant('CHECK.SUMMARY.REGISTRAR', { registrar: result.registrar }),
+      );
+    }
+    return sentences.map((sentence) => finishSentence(sentence)).join(' ');
+  }
+
+  /** "Poland (PL)" when the value is a region code. Other text is left as published. */
+  countryLabel(value: string): string {
+    const name = this.countryName(value);
+    return name && name !== value ? `${name} (${value})` : value;
+  }
+
+  /** Plain meaning for a known registry status. Unknown codes stay unexplained. */
+  statusMeaning(status: string): string | null {
+    const key = `CHECK.STATUS_TEXT.${plainStatusKey(status)}`;
+    const text = this.translate.instant(key);
+    return text && text !== key ? text : null;
+  }
+
+  private summaryAge(age: DomainAge): string {
+    const lang = this.translate.getCurrentLang() === 'pl' ? 'pl' : 'en';
+    const parts: string[] = [];
+    if (age.years > 0) {
+      parts.push(
+        `${age.years} ${this.translate.instant(`CHECK.YEAR_${pluralCategory(age.years, lang)}`)}`,
+      );
+    }
+    if (age.days > 0 || parts.length === 0) {
+      parts.push(
+        `${age.days} ${this.translate.instant(`CHECK.DAY_${pluralCategory(age.days, lang)}`)}`,
+      );
+    }
+    if (parts.length === 2) {
+      return this.translate.instant('CHECK.SUMMARY.AGE_JOIN', { years: parts[0], days: parts[1] });
+    }
+    return parts[0];
+  }
+
+  private countryName(value: string): string | null {
+    if (!/^[A-Za-z]{2}$/.test(value)) {
+      return value;
+    }
+    const lang = this.translate.getCurrentLang() === 'pl' ? 'pl' : 'en';
+    try {
+      const name = new Intl.DisplayNames([lang], { type: 'region' }).of(value.toUpperCase());
+      return name && name.toUpperCase() !== value.toUpperCase() ? name : null;
+    } catch {
+      return null;
+    }
+  }
+}
+
+/** Keep a period that is already part of a name, such as "Inc." or "Sp. z o.o." */
+export function finishSentence(sentence: string): string {
+  const trimmed = sentence.trim();
+  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+}
+
+/** RDAP status codes arrive camelCase or as words. Both map to the same glossary key. */
+export function plainStatusKey(status: string): string {
+  return status
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
 }
