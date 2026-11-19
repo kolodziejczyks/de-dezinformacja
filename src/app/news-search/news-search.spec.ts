@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatTooltip } from '@angular/material/tooltip';
 
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
@@ -198,12 +199,15 @@ describe('NewsSearch', () => {
     expect(
       getElementByTestId(fixture, 'news-search-nameservers').nativeElement.textContent,
     ).toContain('ns-951.awsdns-54.net');
-    expect(getElementByTestId(fixture, 'news-search-result').nativeElement.textContent).toContain(
-      'They often show the hosting company.',
-    );
-    const status = getElementByTestId(fixture, 'news-search-status').nativeElement.textContent;
-    expect(status).toContain('registered');
-    expect(status).toContain('The name is in use.');
+    expect(
+      getElementByTestId(fixture, 'news-search-result').nativeElement.textContent,
+    ).not.toContain('They often show the hosting company.');
+    const status = getElementByTestId(fixture, 'news-search-status').nativeElement;
+    expect(status.textContent).toContain('registered');
+    expect(status.textContent).not.toContain('The name is in use.');
+    const statusButton = status.querySelector('button');
+    expect(statusButton?.getAttribute('aria-label')).toBe('registered');
+    expect(statusButton?.textContent).toContain('registered');
     const summary = getElementByTestId(fixture, 'news-search-summary').nativeElement.textContent;
     expect(summary).toContain('The name tvn24.pl has been registered for 26 years and 73 days.');
     expect(summary).toContain('The record lists the organization TVN S.A. (Poland).');
@@ -236,9 +240,13 @@ describe('NewsSearch', () => {
     expect(summary).toContain('Nazwa tvn24.pl jest zarejestrowana od 26 lat i 73 dni.');
     expect(summary).toContain('Rejestr podaje organizację TVN S.A. (Polska).');
     expect(summary).toContain('Nazwę zarejestrowano przez premium.pl Sp. z o.o.');
-    expect(getElementByTestId(fixture, 'news-search-status').nativeElement.textContent).toContain(
-      'Firma, która zarejestrowała nazwę, zablokowała przeniesienie jej gdzie indziej.',
-    );
+    const statusButton = getElementByTestId(
+      fixture,
+      'news-search-status',
+    ).nativeElement.querySelector('button') as HTMLButtonElement;
+    expect(statusButton.textContent).toContain('clientTransferProhibited');
+    expect(statusButton.textContent).not.toContain('Firma, która zarejestrowała nazwę');
+    expect(statusButton.getAttribute('aria-label')).toBe('clientTransferProhibited');
     expect(getElementByTestId(fixture, 'news-search-country').nativeElement.textContent).toContain(
       'Polska (PL)',
     );
@@ -262,9 +270,10 @@ describe('NewsSearch', () => {
     });
     fixture.detectChanges();
 
-    const status = getElementByTestId(fixture, 'news-search-status').nativeElement.textContent;
-    expect(status).toContain('someCustomFlag');
-    expect(status).not.toContain('CHECK.STATUS_TEXT');
+    const status = getElementByTestId(fixture, 'news-search-status').nativeElement;
+    expect(status.textContent).toContain('someCustomFlag');
+    expect(status.textContent).not.toContain('CHECK.STATUS_TEXT');
+    expect(status.querySelector('button')).toBeNull();
     expect(getElementByTestId(fixture, 'news-search-summary').nativeElement.textContent).toContain(
       'The name was registered through MarkMonitor Inc.',
     );
@@ -314,6 +323,57 @@ describe('NewsSearch', () => {
       '0 years, 17 days',
     );
   });
+
+  it('keeps field hints and status meanings in tooltips', async () => {
+    checks.state.set({
+      status: 'success',
+      result: {
+        domain: 'tvn24.pl',
+        registrar: 'premium.pl Sp. z o.o.',
+        registeredAt: '2000-09-06T11:00:00Z',
+        age: { years: 26, days: 73 },
+        expiresAt: null,
+        updatedAt: null,
+        registrantOrganization: 'TVN S.A.',
+        registrantCountry: 'PL',
+        nameservers: ['ns-951.awsdns-54.net'],
+        status: ['registered'],
+      },
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const hint = getElementByTestId(fixture, 'news-search-hint-nameservers');
+    const hintButton = hint.nativeElement as HTMLButtonElement;
+    expect(hintButton.tagName).toBe('BUTTON');
+    expect(hintButton.getAttribute('aria-label')).toBe('Name servers');
+    const hintTooltip = hint.injector.get(MatTooltip);
+    expect(hintTooltip.message).toBe(
+      'Servers that say where this name points. They often show the hosting company.',
+    );
+    await describedBy(hintButton, hintTooltip.message);
+
+    hintButton.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(document.body.textContent).toContain(hintTooltip.message);
+
+    const statusButton = getElementByTestId(fixture, 'news-search-status').query(
+      (node) => node.nativeElement instanceof HTMLButtonElement,
+    );
+    expect(statusButton).toBeTruthy();
+    const statusTooltip = statusButton!.injector.get(MatTooltip);
+    expect(statusTooltip.message).toBe('The name is in use.');
+    await describedBy(statusButton!.nativeElement as HTMLButtonElement, statusTooltip.message);
+  });
+
+  async function describedBy(button: HTMLButtonElement, message: string): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const ids = button.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [];
+    expect(ids.length).toBeGreaterThan(0);
+    const text = ids.map((id) => document.getElementById(id)?.textContent ?? '').join(' ');
+    expect(text).toContain(message);
+  }
 
   it('shows a message when the TLD has no registration service', () => {
     checks.state.set({ status: 'error', domain: 'example.zzz', kind: 'unsupported' });

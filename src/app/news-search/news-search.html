@@ -173,7 +173,19 @@
 
                 <dl class="facts" [attr.aria-label]="'CHECK.SECTION' | translate">
                   <div class="fact" [class.fact--caution]="isYoungDomain(state.result.age)">
-                    <dt>{{ 'CHECK.AGE' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.AGE' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        data-testid="news-search-hint-age"
+                        [attr.aria-label]="'CHECK.AGE' | translate"
+                        [matTooltip]="'CHECK.HINT.AGE' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-age">
                       @if (state.result.age) {
                         {{ ageLabel(state.result.age) }}
@@ -181,10 +193,20 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.AGE' | translate }}</p>
                   </div>
                   <div class="fact">
-                    <dt>{{ 'CHECK.REGISTERED' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.REGISTERED' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.REGISTERED' | translate"
+                        [matTooltip]="'CHECK.HINT.REGISTERED' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-registered">
                       @if (formatUtcDate(state.result.registeredAt); as registered) {
                         {{ registered }}
@@ -192,10 +214,20 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.REGISTERED' | translate }}</p>
                   </div>
                   <div class="fact" [class.fact--quiet]="isOwnerHidden(state.result)">
-                    <dt>{{ 'CHECK.ORGANIZATION' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.ORGANIZATION' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.ORGANIZATION' | translate"
+                        [matTooltip]="'CHECK.HINT.ORGANIZATION' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-organization">
                       @if (state.result.registrantOrganization; as organization) {
                         {{ organization }}
@@ -203,10 +235,20 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.ORGANIZATION' | translate }}</p>
                   </div>
                   <div class="fact">
-                    <dt>{{ 'CHECK.COUNTRY' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.COUNTRY' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.COUNTRY' | translate"
+                        [matTooltip]="'CHECK.HINT.COUNTRY' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-country">
                       @if (state.result.registrantCountry; as country) {
                         {{ countryLabel(country) }}
@@ -214,10 +256,20 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.COUNTRY' | translate }}</p>
                   </div>
                   <div class="fact">
-                    <dt>{{ 'CHECK.REGISTRAR' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.REGISTRAR' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.REGISTRAR' | translate"
+                        [matTooltip]="'CHECK.HINT.REGISTRAR' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-registrar">
                       @if (state.result.registrar; as registrar) {
                         {{ registrar }}
@@ -225,10 +277,20 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.REGISTRAR' | translate }}</p>
                   </div>
                   <div class="fact">
-                    <dt>{{ 'CHECK.EXPIRES' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.EXPIRES' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.EXPIRES' | translate"
+                        [matTooltip]="'CHECK.HINT.EXPIRES' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-expires">
                       @if (formatUtcDate(state.result.expiresAt); as expires) {
                         {{ expires }}
@@ -236,10 +298,20 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.EXPIRES' | translate }}</p>
                   </div>
                   <div class="fact fact--span-2">
-                    <dt>{{ 'CHECK.UPDATED' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.UPDATED' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.UPDATED' | translate"
+                        [matTooltip]="'CHECK.HINT.UPDATED' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-updated">
                       @if (formatUtcDate(state.result.updatedAt); as updated) {
                         {{ updated }}
@@ -247,18 +319,37 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.UPDATED' | translate }}</p>
                   </div>
                   <div class="fact fact--wide">
-                    <dt>{{ 'CHECK.STATUS' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.STATUS' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.STATUS' | translate"
+                        [matTooltip]="'CHECK.HINT.STATUS' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-status">
                       @if (state.result.status.length) {
                         <ul class="tokens">
                           @for (item of state.result.status; track item) {
                             <li>
-                              <span class="token__code">{{ item }}</span>
                               @if (statusMeaning(item); as meaning) {
-                                <span class="token__meaning">{{ meaning }}</span>
+                                <button
+                                  appTip
+                                  type="button"
+                                  class="token__code"
+                                  [attr.aria-label]="item"
+                                  [matTooltip]="meaning"
+                                >
+                                  {{ item }}
+                                </button>
+                              } @else {
+                                <span class="token__code">{{ item }}</span>
                               }
                             </li>
                           }
@@ -267,10 +358,21 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.STATUS' | translate }}</p>
                   </div>
                   <div class="fact fact--wide">
-                    <dt>{{ 'CHECK.NAMESERVERS' | translate }}</dt>
+                    <dt>
+                      <span>{{ 'CHECK.NAMESERVERS' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        data-testid="news-search-hint-nameservers"
+                        [attr.aria-label]="'CHECK.NAMESERVERS' | translate"
+                        [matTooltip]="'CHECK.HINT.NAMESERVERS' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
                     <dd data-testid="news-search-nameservers">
                       @if (state.result.nameservers.length) {
                         <ul class="hosts">
@@ -282,7 +384,6 @@
                         <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
                     </dd>
-                    <p class="fact__hint">{{ 'CHECK.HINT.NAMESERVERS' | translate }}</p>
                   </div>
                 </dl>
                 <p class="report-card__source">{{ 'CHECK.SOURCE' | translate }}</p>

@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, HostListener, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatTooltip } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BaseCheckService } from '../services/base-check.service';
 import {
@@ -14,6 +15,43 @@ import {
   pluralCategory,
 } from '../services/domain-check';
 import { newsLinkValidator, requiredNewsLink } from './news-link-validator';
+
+/** Info button: the hint is a tooltip on hover, keyboard focus, and tap. */
+@Directive({
+  selector: 'button[appTip]',
+  hostDirectives: [
+    {
+      directive: MatTooltip,
+      inputs: ['matTooltip'],
+    },
+  ],
+})
+export class TipButton {
+  private readonly tooltip = inject(MatTooltip);
+  private openBeforePointer = false;
+
+  constructor() {
+    this.tooltip.touchGestures = 'off';
+    this.tooltip.tooltipClass = 'hint-tooltip';
+    this.tooltip.position = 'above';
+    this.tooltip.showDelay = 0;
+    this.tooltip.hideDelay = 0;
+  }
+
+  @HostListener('pointerdown')
+  remember(): void {
+    this.openBeforePointer = this.tooltip._isTooltipVisible();
+  }
+
+  @HostListener('click')
+  toggle(): void {
+    if (this.openBeforePointer) {
+      this.tooltip.hide(0);
+    } else {
+      this.tooltip.show(0);
+    }
+  }
+}
 
 @Component({
   selector: 'app-news-search',
@@ -28,6 +66,7 @@ import { newsLinkValidator, requiredNewsLink } from './news-link-validator';
     TranslatePipe,
     MatCard,
     MatProgressBar,
+    TipButton,
   ],
   templateUrl: './news-search.html',
   changeDetection: ChangeDetectionStrategy.Eager,
