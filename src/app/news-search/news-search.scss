@@ -1,40 +1,110 @@
 :host {
   display: block;
-  box-sizing: border-box;
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 2rem;
 }
 
-.search-form {
+.hero__kicker {
+  margin: 0;
+  color: var(--mat-sys-primary);
+  font: var(--mat-sys-label-large);
+  font-weight: 600;
+}
+
+.hero__title {
+  margin: 0.35rem 0 0;
+  max-width: 16ch;
+  font-family: var(--mat-sys-display-small-font);
+  font-size: clamp(2.05rem, 5vw, 3.05rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.hero__lede {
+  margin: 0.85rem 0 0;
+  max-width: 38rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.search-panel {
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.35rem;
+}
 
-  &__form-field {
+.search-panel__field {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.search-panel__submit {
+  flex: 0 0 auto;
+  height: 3.5rem;
+  margin-top: 0;
+  padding-inline: 1.1rem;
+}
+
+.idle {
+  margin-top: 1.75rem;
+}
+
+.idle__title {
+  margin: 0;
+  font-family: var(--mat-sys-title-medium-font);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.idle__list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.idle__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.85rem 0.9rem;
+  background: var(--mat-sys-surface-container-low);
+  border-radius: var(--mat-sys-corner-medium);
+  line-height: 1.4;
+}
+
+.idle__list .mat-icon {
+  margin-top: 0.1rem;
+  color: var(--mat-sys-primary);
+}
+
+@media (max-width: 640px) {
+  .search-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-panel__submit {
     width: 100%;
+    height: 3rem;
+    margin-top: 0;
   }
 }
 
-.result-card {
-  margin-top: 0.5rem;
-
-  &__rows {
-    display: grid;
-    grid-template-columns: minmax(9rem, 14rem) 1fr;
-    gap: 0.75rem 1rem;
-    margin: 0;
+@media (min-width: 720px) {
+  .idle__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
-  dt {
-    font-weight: 500;
-  }
-
-  dd {
-    margin: 0;
-  }
-
-  &__nameservers {
-    margin: 0;
-    padding-left: 1.25rem;
+@media (prefers-contrast: more) {
+  .search-panel,
+  .idle__list li {
+    border: 1px solid var(--mat-sys-outline);
   }
 }

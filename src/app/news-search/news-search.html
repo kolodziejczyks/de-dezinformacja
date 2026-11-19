@@ -1,143 +1,398 @@
-<form class="search-form" (submit)="onSubmit($event)">
-  <mat-form-field class="search-form__form-field">
-    <mat-label>{{ 'NEWS_LINK' | translate }}</mat-label>
-    <input
-      type="text"
-      inputmode="url"
-      autocapitalize="off"
-      spellcheck="false"
-      matInput
-      [formControl]="newsFormControl"
-      [placeholder]="'NEWS_LINK_EXAMPLE' | translate"
-      data-testid="news-search-input"
-    />
+<section class="hero">
+  <p class="hero__kicker">{{ 'HERO.KICKER' | translate }}</p>
+  <h1 class="hero__title">{{ 'HERO.HEADING' | translate }}</h1>
+  <p class="hero__lede">{{ 'SHORT_DESCRIPTION' | translate }}</p>
+
+  <form class="search-panel" (submit)="onSubmit($event)">
+    <mat-form-field class="search-panel__field" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ 'NEWS_LINK' | translate }}</mat-label>
+      <input
+        type="text"
+        inputmode="url"
+        autocapitalize="off"
+        spellcheck="false"
+        autocomplete="url"
+        matInput
+        [formControl]="newsFormControl"
+        [placeholder]="'NEWS_LINK_EXAMPLE' | translate"
+        data-testid="news-search-input"
+      />
+      @if (newsFormControl.hasError('newsLink') && !newsFormControl.hasError('required')) {
+        <mat-error data-testid="news-search-www-error">{{
+          'ERROR.INCORRECT_LINK' | translate
+        }}</mat-error>
+      }
+      @if (newsFormControl.hasError('required')) {
+        <mat-error data-testid="news-search-req-error">{{
+          'ERROR.LINK_REQUIRED' | translate
+        }}</mat-error>
+      }
+    </mat-form-field>
     <button
-      mat-icon-button
-      matSuffix
+      mat-flat-button
+      class="search-panel__submit"
       type="submit"
       [attr.aria-label]="'CHECK_SUBMIT' | translate"
       data-testid="news-search-submit"
     >
-      <mat-icon fontIcon="search" />
+      <mat-icon aria-hidden="true" fontIcon="search" />
+      {{ 'CHECK_SUBMIT' | translate }}
     </button>
-
-    @if (newsFormControl.hasError('newsLink') && !newsFormControl.hasError('required')) {
-      <mat-error data-testid="news-search-www-error">{{
-        'ERROR.INCORRECT_LINK' | translate
-      }}</mat-error>
-    }
-    @if (newsFormControl.hasError('required')) {
-      <mat-error data-testid="news-search-req-error">{{
-        'ERROR.LINK_REQUIRED' | translate
-      }}</mat-error>
-    }
-  </mat-form-field>
-</form>
+  </form>
+</section>
 
 <div aria-live="polite" aria-atomic="true">
   @if (baseCheck.state(); as state) {
-    @if (state.status !== 'idle') {
-      <mat-card
-        class="result-card"
-        appearance="outlined"
-        data-testid="news-search-result"
-        [attr.aria-busy]="state.status === 'loading' ? true : null"
-      >
-        @switch (state.status) {
-          @case ('loading') {
-            <mat-card-content data-testid="news-search-loading">
-              <mat-progress-bar mode="indeterminate" />
-              <p>{{ 'CHECK.LOADING' | translate }}</p>
-            </mat-card-content>
-          }
-          @case ('error') {
-            <mat-card-content data-testid="news-search-error">
-              @switch (state.kind) {
-                @case ('unsupported') {
-                  <p>{{ 'CHECK.ERROR.UNSUPPORTED' | translate }}</p>
-                }
-                @case ('not-found') {
-                  <p>{{ 'CHECK.ERROR.NOT_FOUND' | translate }}</p>
-                }
-                @case ('rate-limit') {
-                  <p>{{ 'CHECK.ERROR.RATE_LIMIT' | translate }}</p>
-                }
-                @case ('network') {
-                  <p>{{ 'CHECK.ERROR.NETWORK' | translate }}</p>
-                }
-                @case ('unavailable') {
-                  <p>{{ 'CHECK.ERROR.UNAVAILABLE' | translate }}</p>
-                }
-              }
-            </mat-card-content>
-          }
-          @case ('success') {
-            <mat-card-header>
-              <mat-card-title role="heading" aria-level="2" data-testid="news-search-domain">{{
-                state.result.domain
-              }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <dl class="result-card__rows">
-                <dt>{{ 'CHECK.REGISTRAR' | translate }}</dt>
-                <dd data-testid="news-search-registrar">
-                  {{ state.result.registrar || ('CHECK.UNAVAILABLE' | translate) }}
-                </dd>
-                <dt>{{ 'CHECK.REGISTERED' | translate }}</dt>
-                <dd data-testid="news-search-registered">
-                  {{
-                    formatUtcDate(state.result.registeredAt) || ('CHECK.UNAVAILABLE' | translate)
-                  }}
-                </dd>
-                <dt>{{ 'CHECK.AGE' | translate }}</dt>
-                <dd data-testid="news-search-age">
-                  @if (state.result.age) {
-                    {{ ageLabel(state.result.age) }}
-                  } @else {
-                    {{ 'CHECK.UNAVAILABLE' | translate }}
+    @if (state.status === 'idle') {
+      <section class="idle" [attr.aria-label]="'IDLE.HEADING' | translate">
+        <h2 class="idle__title">{{ 'IDLE.HEADING' | translate }}</h2>
+        <ul class="idle__list">
+          <li>
+            <mat-icon aria-hidden="true" fontIcon="event" />
+            <span>{{ 'IDLE.DATES' | translate }}</span>
+          </li>
+          <li>
+            <mat-icon aria-hidden="true" fontIcon="schedule" />
+            <span>{{ 'IDLE.AGE' | translate }}</span>
+          </li>
+          <li>
+            <mat-icon aria-hidden="true" fontIcon="apartment" />
+            <span>{{ 'IDLE.OWNER' | translate }}</span>
+          </li>
+        </ul>
+      </section>
+    } @else {
+      <div class="report-stack">
+        <mat-card
+          class="report-card"
+          appearance="outlined"
+          data-testid="news-search-result"
+          [attr.aria-busy]="state.status === 'loading' ? true : null"
+        >
+          @switch (state.status) {
+            @case ('loading') {
+              <div class="report-card__body" aria-busy="true" data-testid="news-search-loading">
+                <mat-progress-bar
+                  class="report-card__progress"
+                  mode="indeterminate"
+                  aria-hidden="true"
+                />
+                <p class="report-card__status-text">
+                  {{ 'CHECK.LOADING' | translate: { domain: state.domain } }}
+                </p>
+                <div class="skeleton skeleton--line" aria-hidden="true"></div>
+                <div class="skeleton-grid" aria-hidden="true">
+                  <div class="skeleton skeleton--fact"></div>
+                  <div class="skeleton skeleton--fact"></div>
+                  <div class="skeleton skeleton--fact"></div>
+                  <div class="skeleton skeleton--fact"></div>
+                </div>
+              </div>
+            }
+            @case ('error') {
+              <div class="report-card__body" data-testid="news-search-error">
+                <header class="report-card__header">
+                  <span class="report-card__glyph report-card__glyph--error" aria-hidden="true">
+                    <mat-icon fontIcon="error" />
+                  </span>
+                  <div class="report-card__heading">
+                    <p class="report-card__kicker">{{ state.domain }}</p>
+                    <h2 class="report-card__title">{{ 'CHECK.ERROR_HEADING' | translate }}</h2>
+                  </div>
+                </header>
+                <p class="report-card__message">
+                  @switch (state.kind) {
+                    @case ('unsupported') {
+                      {{ 'CHECK.ERROR.UNSUPPORTED' | translate }}
+                    }
+                    @case ('not-found') {
+                      {{ 'CHECK.ERROR.NOT_FOUND' | translate }}
+                    }
+                    @case ('rate-limit') {
+                      {{ 'CHECK.ERROR.RATE_LIMIT' | translate }}
+                    }
+                    @case ('network') {
+                      {{ 'CHECK.ERROR.NETWORK' | translate }}
+                    }
+                    @case ('unavailable') {
+                      {{ 'CHECK.ERROR.UNAVAILABLE' | translate }}
+                    }
                   }
-                </dd>
-                <dt>{{ 'CHECK.EXPIRES' | translate }}</dt>
-                <dd data-testid="news-search-expires">
-                  {{ formatUtcDate(state.result.expiresAt) || ('CHECK.UNAVAILABLE' | translate) }}
-                </dd>
-                <dt>{{ 'CHECK.UPDATED' | translate }}</dt>
-                <dd data-testid="news-search-updated">
-                  {{ formatUtcDate(state.result.updatedAt) || ('CHECK.UNAVAILABLE' | translate) }}
-                </dd>
-                <dt>{{ 'CHECK.ORGANIZATION' | translate }}</dt>
-                <dd data-testid="news-search-organization">
-                  {{ state.result.registrantOrganization || ('CHECK.UNAVAILABLE' | translate) }}
-                </dd>
-                <dt>{{ 'CHECK.COUNTRY' | translate }}</dt>
-                <dd data-testid="news-search-country">
-                  {{ state.result.registrantCountry || ('CHECK.UNAVAILABLE' | translate) }}
-                </dd>
-                <dt>{{ 'CHECK.STATUS' | translate }}</dt>
-                <dd data-testid="news-search-status">
-                  @if (state.result.status.length) {
-                    {{ state.result.status.join(', ') }}
-                  } @else {
-                    {{ 'CHECK.UNAVAILABLE' | translate }}
-                  }
-                </dd>
-                <dt>{{ 'CHECK.NAMESERVERS' | translate }}</dt>
-                <dd data-testid="news-search-nameservers">
-                  @if (state.result.nameservers.length) {
-                    <ul class="result-card__nameservers">
-                      @for (nameserver of state.result.nameservers; track nameserver) {
-                        <li>{{ nameserver }}</li>
+                </p>
+              </div>
+            }
+            @case ('success') {
+              <div class="report-card__body">
+                <header class="report-card__header">
+                  <span class="report-card__glyph" aria-hidden="true">
+                    <mat-icon fontIcon="language" />
+                  </span>
+                  <div class="report-card__heading">
+                    <p class="report-card__kicker">{{ 'CHECK.SECTION' | translate }}</p>
+                    <h2
+                      class="report-card__title"
+                      role="heading"
+                      aria-level="2"
+                      data-testid="news-search-domain"
+                    >
+                      {{ state.result.domain }}
+                    </h2>
+                  </div>
+                </header>
+
+                <p class="report-card__summary" data-testid="news-search-summary">
+                  {{ summary(state.result) }}
+                </p>
+
+                @if (isYoungDomain(state.result.age) || isOwnerHidden(state.result)) {
+                  <ul class="signals" [attr.aria-label]="'CHECK.SIGNALS' | translate">
+                    @if (isYoungDomain(state.result.age)) {
+                      <li class="signal signal--caution" data-testid="news-search-young">
+                        <mat-icon aria-hidden="true" fontIcon="schedule" />
+                        <span>
+                          <span class="signal__title">{{ 'CHECK.YOUNG_DOMAIN' | translate }}</span>
+                          <span class="signal__why">{{
+                            'CHECK.YOUNG_DOMAIN_WHY' | translate
+                          }}</span>
+                        </span>
+                      </li>
+                    }
+                    @if (isOwnerHidden(state.result)) {
+                      <li class="signal signal--quiet" data-testid="news-search-owner-hidden">
+                        <mat-icon aria-hidden="true" fontIcon="visibility_off" />
+                        <span>
+                          <span class="signal__title">{{ 'CHECK.OWNER_HIDDEN' | translate }}</span>
+                          <span class="signal__why">{{
+                            'CHECK.OWNER_HIDDEN_WHY' | translate
+                          }}</span>
+                        </span>
+                      </li>
+                    }
+                  </ul>
+                }
+
+                <dl class="facts" [attr.aria-label]="'CHECK.SECTION' | translate">
+                  <div class="fact" [class.fact--caution]="isYoungDomain(state.result.age)">
+                    <dt>
+                      <span>{{ 'CHECK.AGE' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        data-testid="news-search-hint-age"
+                        [attr.aria-label]="'CHECK.AGE' | translate"
+                        [matTooltip]="'CHECK.HINT.AGE' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-age">
+                      @if (state.result.age) {
+                        {{ ageLabel(state.result.age) }}
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
                       }
-                    </ul>
-                  } @else {
-                    {{ 'CHECK.UNAVAILABLE' | translate }}
-                  }
-                </dd>
-              </dl>
-            </mat-card-content>
+                    </dd>
+                  </div>
+                  <div class="fact">
+                    <dt>
+                      <span>{{ 'CHECK.REGISTERED' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.REGISTERED' | translate"
+                        [matTooltip]="'CHECK.HINT.REGISTERED' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-registered">
+                      @if (formatUtcDate(state.result.registeredAt); as registered) {
+                        {{ registered }}
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                  <div class="fact" [class.fact--quiet]="isOwnerHidden(state.result)">
+                    <dt>
+                      <span>{{ 'CHECK.ORGANIZATION' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.ORGANIZATION' | translate"
+                        [matTooltip]="'CHECK.HINT.ORGANIZATION' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-organization">
+                      @if (state.result.registrantOrganization; as organization) {
+                        {{ organization }}
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                  <div class="fact">
+                    <dt>
+                      <span>{{ 'CHECK.COUNTRY' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.COUNTRY' | translate"
+                        [matTooltip]="'CHECK.HINT.COUNTRY' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-country">
+                      @if (state.result.registrantCountry; as country) {
+                        {{ countryLabel(country) }}
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                  <div class="fact">
+                    <dt>
+                      <span>{{ 'CHECK.REGISTRAR' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.REGISTRAR' | translate"
+                        [matTooltip]="'CHECK.HINT.REGISTRAR' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-registrar">
+                      @if (state.result.registrar; as registrar) {
+                        {{ registrar }}
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                  <div class="fact">
+                    <dt>
+                      <span>{{ 'CHECK.EXPIRES' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.EXPIRES' | translate"
+                        [matTooltip]="'CHECK.HINT.EXPIRES' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-expires">
+                      @if (formatUtcDate(state.result.expiresAt); as expires) {
+                        {{ expires }}
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                  <div class="fact fact--span-2">
+                    <dt>
+                      <span>{{ 'CHECK.UPDATED' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.UPDATED' | translate"
+                        [matTooltip]="'CHECK.HINT.UPDATED' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-updated">
+                      @if (formatUtcDate(state.result.updatedAt); as updated) {
+                        {{ updated }}
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                  <div class="fact fact--wide">
+                    <dt>
+                      <span>{{ 'CHECK.STATUS' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        [attr.aria-label]="'CHECK.STATUS' | translate"
+                        [matTooltip]="'CHECK.HINT.STATUS' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-status">
+                      @if (state.result.status.length) {
+                        <ul class="tokens">
+                          @for (item of state.result.status; track item) {
+                            <li>
+                              @if (statusMeaning(item); as meaning) {
+                                <button
+                                  appTip
+                                  type="button"
+                                  class="token__code"
+                                  [attr.aria-label]="item"
+                                  [matTooltip]="meaning"
+                                >
+                                  {{ item }}
+                                </button>
+                              } @else {
+                                <span class="token__code">{{ item }}</span>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                  <div class="fact fact--wide">
+                    <dt>
+                      <span>{{ 'CHECK.NAMESERVERS' | translate }}</span>
+                      <button
+                        appTip
+                        type="button"
+                        class="hint"
+                        data-testid="news-search-hint-nameservers"
+                        [attr.aria-label]="'CHECK.NAMESERVERS' | translate"
+                        [matTooltip]="'CHECK.HINT.NAMESERVERS' | translate"
+                      >
+                        <mat-icon aria-hidden="true" fontIcon="info" />
+                      </button>
+                    </dt>
+                    <dd data-testid="news-search-nameservers">
+                      @if (state.result.nameservers.length) {
+                        <ul class="hosts">
+                          @for (nameserver of state.result.nameservers; track nameserver) {
+                            <li>{{ nameserver }}</li>
+                          }
+                        </ul>
+                      } @else {
+                        <span class="fact__missing">{{ 'CHECK.UNAVAILABLE' | translate }}</span>
+                      }
+                    </dd>
+                  </div>
+                </dl>
+                <p class="report-card__source">{{ 'CHECK.SOURCE' | translate }}</p>
+              </div>
+            }
           }
-        }
-      </mat-card>
+        </mat-card>
+        <!-- Further checks, such as fact-check reviews, go here as more .report-card blocks. -->
+      </div>
     }
   }
 </div>
