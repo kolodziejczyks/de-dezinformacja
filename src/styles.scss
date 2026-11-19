@@ -1,46 +1,514 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+@use './theme/palette' as palette;
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 html {
+  --page-max: 56rem;
+  color-scheme: light dark;
+
   @include mat.theme(
     (
       color: (
-        primary: mat.$cyan-palette,
-        tertiary: mat.$orange-palette,
+        theme-type: color-scheme,
+        primary: palette.$ink-palette,
+        tertiary: palette.$ochre-palette,
       ),
-      typography: Roboto,
+      typography: (
+        plain-family: (
+          'Inter',
+          'Segoe UI',
+          sans-serif,
+        ),
+        brand-family: (
+          'Inter',
+          'Segoe UI',
+          sans-serif,
+        ),
+        bold-weight: 600,
+        medium-weight: 500,
+        regular-weight: 400,
+      ),
       density: 0,
     )
   );
+
+  @include mat.theme-overrides(
+    (
+      corner-full: 10px,
+    )
+  );
 }
-
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-}
-/* You can add global styles to this file, and also import other style files */
 
 html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-large);
+  text-rendering: optimizeLegibility;
+}
+
+// Result sections share this shell. A later fact-check block should use
+// .report-stack > .report-card, with a header (glyph, kicker, title) and a body.
+.report-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.report-card.mat-mdc-card {
+  background: var(--mat-sys-surface-container-lowest);
+  border-color: var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-large);
+  box-shadow: none;
+}
+
+.report-card__body {
+  padding: 1.15rem 1.15rem 1.2rem;
+}
+
+.report-card__progress {
+  margin: -1.15rem -1.15rem 0.9rem;
+}
+
+.report-card__status-text {
+  margin: 0;
+  font: var(--mat-sys-body-large);
+}
+
+.report-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.report-card__glyph {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.report-card__glyph--error,
+.report-card__glyph--alert {
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.report-card--alert.mat-mdc-card {
+  border-color: var(--mat-sys-error);
+}
+
+.kicker-line {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.kicker-line .report-card__kicker {
+  margin: 0;
+}
+
+.hint--inline {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+}
+
+.report-card__note {
+  margin: 0.75rem 0 0;
+  max-width: 40rem;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+  line-height: 1.45;
+}
+
+.archive-link {
+  color: var(--mat-sys-primary);
+  font-weight: 600;
+  text-underline-offset: 0.15em;
+}
+
+.archive-link:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+.check-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .check-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.report-card__heading {
+  min-width: 0;
+}
+
+.report-card__kicker {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-label-medium);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.report-card__title {
+  margin: 0.15rem 0 0;
+  font-family: var(--mat-sys-headline-small-font);
+  font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.report-card__title--compact {
+  font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+}
+
+.report-card__message {
+  margin: 0.9rem 0 0;
+  max-width: 40rem;
+  font: var(--mat-sys-body-large);
+}
+
+.report-card__summary {
+  margin: 0.85rem 0 0;
+  max-width: 40rem;
+  font: var(--mat-sys-body-large);
+  line-height: 1.5;
+}
+
+.report-card__source {
+  margin: 1rem 0 0;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+}
+
+.signals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.signal {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  font: var(--mat-sys-body-medium);
+  line-height: 1.45;
+}
+
+.signal__title {
+  display: block;
+  font-weight: 600;
+}
+
+.signal__why {
+  display: block;
+  margin-top: 0.12rem;
+  font-weight: 400;
+}
+
+.signal--caution {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.signal--alert {
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.signal--quiet {
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  box-shadow: inset 0 0 0 1px var(--mat-sys-outline-variant);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  margin: 1rem 0 0;
+}
+
+.fact {
+  min-width: 0;
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  background: var(--mat-sys-surface-container);
+  border-radius: var(--mat-sys-corner-small);
+}
+
+.fact--wide {
+  grid-column: 1 / -1;
+}
+
+.fact--caution {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.fact--quiet {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--mat-sys-outline);
+}
+
+.fact dt {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.15rem;
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-label-medium);
+}
+
+.hint {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: -0.28rem 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.hint .mat-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  font-size: 1.05rem;
+}
+
+.hint:focus-visible,
+button.token__code:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+.fact--caution dt {
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.fact dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.fact__missing {
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.fact--caution .fact__missing {
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.hosts,
+.tokens {
+  margin: 0.1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 450;
+}
+
+.hosts {
+  font-family: ui-monospace, 'Source Code Pro', monospace;
+  font-size: 0.92rem;
+}
+
+.hosts li + li {
+  margin-top: 0.2rem;
+}
+
+.tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tokens li {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.token__code {
+  display: inline-block;
+  margin: 0;
+  padding: 0.12rem 0.55rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-highest);
+  color: inherit;
+  font: var(--mat-sys-label-medium);
+  line-height: 1.4;
+}
+
+button.token__code {
+  cursor: pointer;
+}
+
+.hint-tooltip {
+  max-width: 18rem;
+}
+
+.hint-tooltip .mat-mdc-tooltip-surface {
+  max-width: 18rem;
+  white-space: normal;
+  text-align: start;
+  line-height: 1.4;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(
+    100deg,
+    var(--mat-sys-surface-container) 30%,
+    var(--mat-sys-surface-container-high) 50%,
+    var(--mat-sys-surface-container) 70%
+  );
+  background-size: 220% 100%;
+  animation: skeleton-shine 1.4s ease-in-out infinite;
+}
+
+.skeleton--line {
+  width: min(16rem, 70%);
+  height: 1.35rem;
+  margin-top: 0.95rem;
+}
+
+.skeleton--fact {
+  height: 3.5rem;
+}
+
+@keyframes skeleton-shine {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.mat-icon {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+}
+
+.signal .mat-icon,
+.site-footer .mat-icon,
+.idle__list .mat-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  font-size: 1.15rem;
+  flex: 0 0 auto;
+}
+
+.signal .mat-icon {
+  margin-top: 0.15rem;
+}
+
+@media (min-width: 640px) {
+  .facts,
+  .skeleton-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fact--span-2 {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 960px) {
+  .facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-contrast: more) {
+  .report-card.mat-mdc-card,
+  .fact,
+  .signal--quiet {
+    box-shadow: inset 0 0 0 1px var(--mat-sys-outline);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

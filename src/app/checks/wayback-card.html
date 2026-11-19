@@ -1,0 +1,122 @@
+@if (wayback.state(); as state) {
+  @if (state.status !== 'idle') {
+    <mat-card
+      class="report-card"
+      appearance="outlined"
+      data-testid="wayback-card"
+      [attr.aria-busy]="state.status === 'loading' ? true : null"
+    >
+      @switch (state.status) {
+        @case ('loading') {
+          <div class="report-card__body" data-testid="wayback-loading">
+            <mat-progress-bar
+              class="report-card__progress"
+              mode="indeterminate"
+              aria-hidden="true"
+            />
+            <p class="report-card__status-text">
+              {{ 'WAYBACK.LOADING' | translate: { domain: state.domain } }}
+            </p>
+          </div>
+        }
+        @case ('error') {
+          <div class="report-card__body" data-testid="wayback-error">
+            <header class="report-card__header">
+              <span class="report-card__glyph report-card__glyph--error" aria-hidden="true">
+                <mat-icon fontIcon="error" />
+              </span>
+              <div class="report-card__heading">
+                <p class="report-card__kicker">{{ state.domain }}</p>
+                <h2 class="report-card__title report-card__title--compact">
+                  {{ 'WAYBACK.ERROR_HEADING' | translate }}
+                </h2>
+              </div>
+            </header>
+            <p class="report-card__message">
+              @switch (state.kind) {
+                @case ('network') {
+                  {{ 'WAYBACK.ERROR.NETWORK' | translate }}
+                }
+                @default {
+                  {{ 'WAYBACK.ERROR.UNAVAILABLE' | translate }}
+                }
+              }
+            </p>
+          </div>
+        }
+        @case ('success') {
+          <div class="report-card__body">
+            <header class="report-card__header">
+              <span class="report-card__glyph" aria-hidden="true">
+                <mat-icon fontIcon="history" />
+              </span>
+              <div class="report-card__heading">
+                <p class="kicker-line">
+                  <span class="report-card__kicker">{{ 'WAYBACK.SECTION' | translate }}</span>
+                  <button
+                    appTip
+                    type="button"
+                    class="hint hint--inline"
+                    data-testid="wayback-hint"
+                    [attr.aria-label]="'WAYBACK.SECTION' | translate"
+                    [matTooltip]="'WAYBACK.HINT' | translate"
+                  >
+                    <mat-icon aria-hidden="true" fontIcon="info" />
+                  </button>
+                </p>
+                <h2 class="report-card__title report-card__title--compact">
+                  {{ state.result.domain }}
+                </h2>
+              </div>
+            </header>
+
+            @if (state.result.domainCapture; as capture) {
+              <p class="report-card__summary" data-testid="wayback-domain">
+                {{ 'WAYBACK.FIRST_ON' | translate: { date: capture.date } }}
+              </p>
+              <p class="report-card__message">
+                <a
+                  class="archive-link"
+                  data-testid="wayback-domain-link"
+                  [href]="capture.archiveUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [attr.aria-label]="'WAYBACK.OPEN' | translate"
+                >
+                  {{ 'WAYBACK.OPEN' | translate }}
+                </a>
+              </p>
+            } @else {
+              <p class="report-card__summary" data-testid="wayback-none">
+                {{ 'WAYBACK.NONE' | translate }}
+              </p>
+            }
+
+            @if (state.result.pageChecked) {
+              <p class="report-card__note" data-testid="wayback-page">
+                @if (state.result.pageError) {
+                  {{ 'WAYBACK.PAGE_ERROR' | translate }}
+                } @else if (state.result.pageCapture; as page) {
+                  {{ 'WAYBACK.PAGE_ON' | translate: { date: page.date } }}
+                  <a
+                    class="archive-link"
+                    data-testid="wayback-page-link"
+                    [href]="page.archiveUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [attr.aria-label]="'WAYBACK.OPEN_PAGE' | translate"
+                  >
+                    {{ 'WAYBACK.OPEN' | translate }}
+                  </a>
+                } @else {
+                  {{ 'WAYBACK.PAGE_NONE' | translate }}
+                }
+              </p>
+            }
+            <p class="report-card__source">{{ 'WAYBACK.SOURCE' | translate }}</p>
+          </div>
+        }
+      }
+    </mat-card>
+  }
+}

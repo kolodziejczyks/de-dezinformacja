@@ -17,6 +17,8 @@ describe('App', () => {
 
   afterEach(() => {
     localStorage.clear();
+    document.getElementById('site-manifest')?.remove();
+    document.querySelector('meta[name="application-name"]')?.remove();
   });
 
   it('should create the app', () => {
@@ -27,12 +29,22 @@ describe('App', () => {
 
   it('restores the stored language before the first render', () => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, 'en');
+    document.head.insertAdjacentHTML(
+      'beforeend',
+      '<meta name="application-name" content=""><link id="site-manifest" rel="manifest" href="manifest.webmanifest">',
+    );
 
     const fixture = TestBed.createComponent(App);
 
     expect(document.documentElement.lang).toBe('en');
-    expect(document.title).toBe('De-Disinformation');
+    expect(document.title).toBe('DDezinformacja');
+    expect(document.querySelector('meta[name="application-name"]')?.getAttribute('content')).toBe(
+      'DDezinformacja',
+    );
+    expect(document.getElementById('site-manifest')?.getAttribute('href')).toBe(
+      'manifest.en.webmanifest',
+    );
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('De-Disinformation');
+    expect(fixture.nativeElement.textContent).toContain('DDezinformacja');
   });
 });

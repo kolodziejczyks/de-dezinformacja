@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "de-dezinformacja": {
+    "ddezinformacja": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -58,12 +58,15 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
-              "buildTarget": "de-dezinformacja:build:production"
+              "buildTarget": "ddezinformacja:build:production"
             },
             "development": {
-              "buildTarget": "de-dezinformacja:build:development"
+              "buildTarget": "ddezinformacja:build:development"
             }
           },
           "defaultConfiguration": "development"

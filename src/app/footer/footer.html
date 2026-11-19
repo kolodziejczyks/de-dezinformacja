@@ -1,45 +1,52 @@
-<footer class="footer">
-  <h4 class="footer__heading">
-    {{ 'ABOUT_WEBSITE' | translate }}
-  </h4>
-  <p class="footer__description">{{ 'LONG_DESCRIPTION' | translate }}</p>
-  <div class="footer__copyright">
-    <p>© {{ currentYear }} Szymon Kołodziejczyk IT Solutions.</p>
-    <p>{{ 'APACHE_LICENSED' | translate }}</p>
-  </div>
-  <div class="footer__links">
-    <h4 class="footer__heading">
-      {{ 'CONTACT_ME' | translate }}
-    </h4>
-    <a
-      href="https://www.linkedin.com/in/kolodziejczyk-sz"
-      target="_blank"
-      rel="noopener"
-      mat-icon-button
-      aria-label="LinkedIn"
-    >
-      <mat-icon fontIcon="people"></mat-icon>
-      LinkedIn
-    </a>
-    <a
-      href="https://www.instagram.com/niewiemniczego"
-      target="_blank"
-      rel="noopener"
-      mat-icon-button
-      aria-label="Instagram"
-    >
-      <mat-icon fontIcon="photo_camera"></mat-icon>
-      Instagram
-    </a>
-    <a
-      href="https://github.com/kolodziejczyks"
-      target="_blank"
-      rel="noopener"
-      mat-icon-button
-      aria-label="Github"
-    >
-      <mat-icon fontIcon="code"></mat-icon>
-      Github
-    </a>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__grid">
+      <section aria-labelledby="footer-about">
+        <h2 id="footer-about">{{ 'ABOUT_WEBSITE' | translate }}</h2>
+        <p>{{ 'LONG_DESCRIPTION' | translate }}</p>
+      </section>
+      <section aria-labelledby="footer-contact">
+        <h2 id="footer-contact">{{ 'CONTACT_ME' | translate }}</h2>
+        <ul>
+          <li>
+            <a
+              href="https://www.linkedin.com/in/kolodziejczyk-sz"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="'LINK.LINKEDIN' | translate"
+            >
+              <mat-icon aria-hidden="true" fontIcon="group" />
+              LinkedIn
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.instagram.com/niewiemniczego"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="'LINK.INSTAGRAM' | translate"
+            >
+              <mat-icon aria-hidden="true" fontIcon="photo_camera" />
+              Instagram
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/kolodziejczyks"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="'LINK.GITHUB' | translate"
+            >
+              <mat-icon aria-hidden="true" fontIcon="code" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <div class="site-footer__legal">
+      <p>© {{ currentYear }} Szymon Kołodziejczyk IT Solutions.</p>
+      <p>{{ 'APACHE_LICENSED' | translate }}</p>
+    </div>
   </div>
 </footer>
